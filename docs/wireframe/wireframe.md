@@ -1,4 +1,3 @@
-```md id="jv82kd"
 # Wireframe de Alta Fidelidade — IndieVerse
 
 ---
