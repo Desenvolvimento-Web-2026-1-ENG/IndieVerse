@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exercício HTML: Formulário de Busca do Google</title>
+    <meta name="description" content="Formulário de pesquisa no Google!!">
+    <meta name="keywords" content="Google, Pesquisa, Navegação, Formulário">
+    <meta name="author" content="Pedro Henrique Cordeiro">
+    <title>Formulário de Busca do Google</title>
     <style>
         * {
             box-sizing: border-box;
@@ -32,25 +35,6 @@
             margin-bottom: 10px;
             border-bottom: 2px solid #f1f3f4;
             padding-bottom: 15px;
-        }
-        .instructions {
-            background-color: #e8f0fe;
-            border-left: 5px solid #1a73e8;
-            padding: 15px;
-            margin-bottom: 30px;
-            border-radius: 4px;
-        }
-        .instructions h2 {
-            font-size: 16px;
-            color: #1967d2;
-            margin-top: 0;
-            margin-bottom: 8px;
-        }
-        .instructions ul {
-            margin: 0;
-            padding-left: 20px;
-            font-size: 14px;
-            line-height: 1.6;
         }
         .exercise-box {
             background-color: #f8f9fa;
@@ -122,46 +106,26 @@
         input[type="reset"]:hover {
             background-color: #e8eaed;
         }
-        .comment {
-            font-family: Consolas, Monaco, monospace;
-            color: #808080;
-            font-size: 12px;
-            margin-top: 15px;
-            display: block;
-            line-height: 1.4;
-        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Exercício: Integração com Busca do Google</h1>
-    
-    <div class="instructions">
-        <h2>Instruções Pedagógicas</h2>
-        <ul>
-            <li><strong>Desafio:</strong> Criar um formulário HTML capaz de enviar uma consulta diretamente para o sistema de buscas do Google.</li>
-            <li><strong>Conceitos Chave:</strong> Atributos fundamentais da tag <code>&lt;form&gt;</code> e parâmetros de URL (Query String).</li>
-            <li><strong>Requisitos Técnicos obrigatórios:</strong>
-                <ul>
-                    <li>O atributo <code>action</code> deve apontar para a URL correta do script de busca do Google.</li>
-                    <li>O atributo <code>method</code> deve usar o método HTTP apropriado para buscas.</li>
-                    <li>O campo de texto de entrada precisa ter o atributo <code>name</code> com o valor exato exigido pela API pública do Google.</li>
-                </ul>
-            </li>
-        </ul>
-    </div>
+    <h1>Integração com Busca do Google</h1>
 
     <div class="exercise-box">
-        <h3>Área de Resolução do Aluno</h3>
+        <h3>Formulário de busca</h3>
         
-        <!--
-        
-                   IMPLEMENTAÇÃO 
-
-
-        -->
-       
+        <form action="https://www.google.com/search" method="GET">
+            <div class="form-group">
+                <label for="pesquisa">Digite o que você quer:</label>
+                <input type="text" id="pesquisa" name="q" placeholder="Digite aqui...">
+            </div>
+            <div class="btn-container">
+                <input type="reset" value="Limpar">
+                <input type="submit" value="Pesquisar">
+            </div>
+        </form>
     </div>
 </div>
 
