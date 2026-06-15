@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercício HTML: Formulário de Busca do Google</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f3f4;
+            color: #202124;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: #ffffff;
+            max-width: 650px;
+            width: 100%;
+            padding: 35px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #1a73e8;
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #f1f3f4;
+            padding-bottom: 15px;
+        }
+        .instructions {
+            background-color: #e8f0fe;
+            border-left: 5px solid #1a73e8;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        .instructions h2 {
+            font-size: 16px;
+            color: #1967d2;
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+        .instructions ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .exercise-box {
+            background-color: #f8f9fa;
+            border: 1px dashed #dadce0;
+            padding: 25px;
+            border-radius: 6px;
+        }
+        .exercise-box h3 {
+            margin-top: 0;
+            font-size: 15px;
+            color: #5f6368;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #3c4043;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+        }
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        input[type="submit"] {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        input[type="submit"]:hover {
+            background-color: #1557b0;
+        }
+        input[type="reset"] {
+            background-color: #f1f3f4;
+            color: #3c4043;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        input[type="reset"]:hover {
+            background-color: #e8eaed;
+        }
+        .comment {
+            font-family: Consolas, Monaco, monospace;
+            color: #808080;
+            font-size: 12px;
+            margin-top: 15px;
+            display: block;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Exercício: Integração com Busca do Google</h1>
+    
+    <div class="instructions">
+        <h2>Instruções Pedagógicas</h2>
+        <ul>
+            <li><strong>Desafio:</strong> Criar um formulário HTML capaz de enviar uma consulta diretamente para o sistema de buscas do Google.</li>
+            <li><strong>Conceitos Chave:</strong> Atributos fundamentais da tag <code>&lt;form&gt;</code> e parâmetros de URL (Query String).</li>
+            <li><strong>Requisitos Técnicos obrigatórios:</strong>
+                <ul>
+                    <li>O atributo <code>action</code> deve apontar para a URL correta do script de busca do Google.</li>
+                    <li>O atributo <code>method</code> deve usar o método HTTP apropriado para buscas.</li>
+                    <li>O campo de texto de entrada precisa ter o atributo <code>name</code> com o valor exato exigido pela API pública do Google.</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="exercise-box">
+        <h3>Área de Resolução do Aluno</h3>
+        
+        <!--
+        
+                   IMPLEMENTAÇÃO 
+
+
+        -->
+       
+    </div>
+</div>
+
+</body>
+</html>
