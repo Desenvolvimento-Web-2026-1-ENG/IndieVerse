@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dias até hoje</title>
+</head>
+<body>
+
+    <h2>Quantos dias até o dia de hoje??</h2>
+    <label>Selecione uma data:</label>
+    <input type="date" id="dataInput">
+    <button onclick="calcularDias()">Calcular</button>
+    <p id="resultado"></p>
+
+    <script>
+        function calcularDias() {
+            const dataSelecionada = document.getElementById("dataInput").value;
+            const hoje = new Date();
+            const data = new Date(dataSelecionada);
+            hoje.setHours(0,0,0,0);
+            data.setHours(0,0,0,0);
+            const diffMs = hoje - data;
+            const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            if (diffDias >= 0) {
+                document.getElementById("resultado").innerText =
+                    `Tantos ${diffDias} dias desde essa data :p`;
+            }
+        }
+    </script>
+
+</body>
+</html>
