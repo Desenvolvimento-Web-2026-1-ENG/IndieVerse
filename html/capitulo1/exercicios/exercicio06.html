@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Agenda de Contatos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<div class="bg-white w-full max-w-md p-8 rounded-xl shadow-lg">
+    <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">
+        Agenda de Contatos
+    </h1>
+    <div class="space-y-4">
+        <input 
+            id="nome"
+            type="text"
+            placeholder="Nome"
+            class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-400"
+        >
+        <input 
+            id="telefone"
+            type="text"
+            placeholder="Telefone"
+            class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-400"
+        >
+        <button
+            onclick="adicionar()"
+            class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
+            Adicionar Contato
+        </button>
+        <button
+            onclick="listar()"
+            class="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700">
+            Listar no Console
+        </button>
+    </div>
+    <hr class="my-6">
+
+    <h2 class="font-bold mb-3">
+        Buscar contato
+    </h2>
+    <input 
+        id="busca"
+        type="text"
+        placeholder="Digite um nome"
+        class="w-full border p-3 rounded-lg mb-3"
+    >
+    <button
+        onclick="buscar()"
+        class="w-full bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700">
+        Buscar
+    </button>
+</div>
+
+<script src="./agenda.js"></script>
+<script>
+
+const minhaAgenda = new Agenda();
+
+function adicionar(){
+    let nome = document.getElementById("nome").value;
+    let telefone = document.getElementById("telefone").value;
+    minhaAgenda.adicionarContato(nome, telefone);
+    console.log("Contato salvo!");
+}
+
+function listar(){
+    minhaAgenda.listarContatos();
+}
+
+function buscar(){
+    let nome = document.getElementById("busca").value;
+    minhaAgenda.buscarContato(nome);
+}
+</script>
+</body>
+</html>
