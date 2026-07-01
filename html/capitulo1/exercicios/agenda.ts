@@ -1,12 +1,19 @@
+import { Pessoa } from "./pessoa";
+import { Contato } from "./contato";
+
+
 export class Agenda {
-    pessoas;
+    private pessoas: Pessoa[];
+
     constructor() {
         this.pessoas = [];
     }
-    adicionarPessoa(pessoa) {
+
+    adicionarPessoa(pessoa: Pessoa): void {
         this.pessoas.push(pessoa);
     }
-    listarPessoas() {
+
+    listarPessoas(): void {
         this.pessoas.forEach(pessoa => {
             pessoa.mostrarDados();
         });

@@ -17,13 +17,13 @@
             id="nome"
             type="text"
             placeholder="Nome"
-            class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-400"
+            class="w-full border p-3 rounded-lg"
         >
         <input 
             id="telefone"
             type="text"
             placeholder="Telefone"
-            class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-400"
+            class="w-full border p-3 rounded-lg"
         >
         <button
             onclick="adicionar()"
@@ -53,26 +53,42 @@
         Buscar
     </button>
 </div>
+<script type="module">
 
-<script src="./agenda.js"></script>
-<script>
+import { Agenda } from "./agenda.js";
+import { Pessoa } from "./pessoa.js";
+import { Contato } from "./contato.js";
 
 const minhaAgenda = new Agenda();
 
-function adicionar(){
-    let nome = document.getElementById("nome").value;
-    let telefone = document.getElementById("telefone").value;
-    minhaAgenda.adicionarContato(nome, telefone);
-    console.log("Contato salvo!");
+window.adicionar = function(){
+    const nome = document
+        .getElementById("nome")
+        .value;
+    const telefone = document
+        .getElementById("telefone")
+        .value;
+    const contato = new Contato(
+        nome,
+        telefone
+    );
+    const pessoa = new Pessoa(
+        nome,
+        contato
+    );
+    minhaAgenda.adicionarPessoa(pessoa);
+    console.log("Pessoa adicionada!");
 }
 
-function listar(){
-    minhaAgenda.listarContatos();
+window.listar = function(){
+    minhaAgenda.listarPessoas();
 }
 
-function buscar(){
-    let nome = document.getElementById("busca").value;
-    minhaAgenda.buscarContato(nome);
+window.buscar = function(){
+    const nome = document
+        .getElementById("busca")
+        .value;
+    console.log("Busca por:", nome);
 }
 </script>
 </body>
