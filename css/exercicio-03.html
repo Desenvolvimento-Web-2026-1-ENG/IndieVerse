@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Contato</title>
+    <link rel="stylesheet" type="text/css" href="exercicio3.css">
+</head>
+<body>
+
+    <main class="container-form">
+        <header>
+            <h2>Entre em Contato</h2>
+            <p>Preencha os dados abaixo e nos envie sua mensagem.</p>
+        </header>
+
+        <form action="#" method="POST" class="form-contato">
+            <div class="grupo-input">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" name="nome" placeholder="Ex: João da Silva" required>
+            </div>
+
+            <div class="grupo-input">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" placeholder="seuemail@dominio.com" required>
+            </div>
+
+            <div class="grupo-input">
+                <label for="mensagem">Mensagem</label>
+                <textarea id="mensagem" name="mensagem" rows="5" placeholder="Escreva sua mensagem aqui..." required></textarea>
+            </div>
+
+            <div class="acoes-form">
+                <button type="submit" class="btn-enviar">Enviar Mensagem</button>
+            </div>
+        </form>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+<html>
+<head>
+    <title>página</title>
+</head>
+<body>
+    <div id="cabecalho">
+        <div class="titulo">Área de Contato do Cliente</div>
+        <div class="menu">
+            <a href="#">Ajuda</a> | <a href="#">Sair</a>
+        </div>
+    </div>
+
+    <div id="corpo-da-pagina">
+        <div class="subtitulo">Envie sua mensagem para a nossa equipe de suporte backend</div>
+        
+        <form action="/enviar" method="GET">
+            Nome: <input type="text" name="nome"><br><br>
+            Email: <input type="text" name="email"><br><br>
+            Telefone Celular: <input type="text" name="celular"><br><br>
+            Mensagem: <textarea name="msg"></textarea><br><br>
+            
+            <input type="button" value="Disparar Dados">
+        </form>
+    </div>
+
+    <div id="rodape">
+        Suporte Tech 2026
+    </div>
+</body>
+</html>
