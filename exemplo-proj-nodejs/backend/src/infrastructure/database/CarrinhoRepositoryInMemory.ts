@@ -1,4 +1,4 @@
-import { ItemCarrinho } from "@entities/ItemCarrinho";
+import { ItemCarrinho } from "@entities/Carrinho";
 
 let carrinho: ItemCarrinho[] = [];
 

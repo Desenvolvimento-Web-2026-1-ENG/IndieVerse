@@ -20,7 +20,6 @@ app.get('/api/health', (req: Request, res: Response) => {
   });
 });
 
-// Iniciando o servidor na porta definida
 app.listen(PORTA, () => {
-  console.log(`🚀 Servidor rodando em http://localhost:${PORTA}`);
+  console.log(`Servidor rodando em http://localhost:${PORTA}`);
 })

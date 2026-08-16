@@ -10,7 +10,7 @@ export class BibliotecaRepositoryInMemory implements IBibliotecaRepository {
       id: proximoId++,
       jogadorId,
       jogoId,
-      dataAquisicao: new Date(),
+      dataAquisicao: new Date()
     };
     licencas.push(novaLicenca);
     return novaLicenca;
@@ -20,7 +20,7 @@ export class BibliotecaRepositoryInMemory implements IBibliotecaRepository {
     return licencas.filter((l) => l.jogadorId === jogadorId);
   }
 
-  possuilicenca(jogadorId: number, jogoId: number): boolean {
+  possuiLicenca(jogadorId: number, jogoId: number): boolean {
     return licencas.some((l) => l.jogadorId === jogadorId && l.jogoId === jogoId);
   }
 }

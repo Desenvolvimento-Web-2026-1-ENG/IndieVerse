@@ -1,12 +1,8 @@
 import { Categoria } from "@entities/Categoria";
 import { ICategoriaRepository } from "@repositories/ICategoriaRepository";
 
-let categorias: Categoria[] = [
-  { id: 1, nome: "Metroidvania" },
-  { id: 2, nome: "RPG" },
-  { id: 3, nome: "Simulação" }
-];
-let proximoId = 4;
+let categorias: Categoria[] = [];
+let proximoId = 1;
 
 export class CategoriaRepositoryInMemory implements ICategoriaRepository {
   listarTodas(): Categoria[] {
@@ -27,17 +23,23 @@ export class CategoriaRepositoryInMemory implements ICategoriaRepository {
   }
 
   atualizar(id: number, dados: Partial<Categoria>): Categoria | undefined {
-    const index = categorias.findIndex((c) => c.id === id);
-    if (index === -1) return undefined;
+    const categoriaExistente = categorias.find((c) => c.id === id);
+    if (!categoriaExistente) return undefined;
 
-    categorias[index] = { ...categorias[index], ...dados, id };
-    return categorias[index];
+    const categoriaAtualizada: Categoria = {
+      id,
+      nome: dados.nome ?? categoriaExistente.nome,
+    };
+
+    const index = categorias.findIndex((c) => c.id === id);
+    categorias[index] = categoriaAtualizada;
+
+    return categoriaAtualizada;
   }
 
   excluir(id: number): boolean {
     const tamanhoInicial = categorias.length;
     categorias = categorias.filter((c) => c.id !== id);
-
     return categorias.length < tamanhoInicial;
   }
 }

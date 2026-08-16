@@ -1,31 +1,24 @@
-import swaggerJSDoc from "swagger-jsdoc";
+import swaggerJSDoc from 'swagger-jsdoc';
 
 const PORT = process.env.PORT || 3000;
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}/api/v1`;
 
 const options: swaggerJSDoc.Options = {
   definition: {
-    openapi: "3.0.0",
+    openapi: '3.0.0',
     info: {
-      title: "API de Gestão de Tarefas e Categorias",
-      version: "1.0.0",
-      description:
-        "Documentação oficial da API de forma dinâmica estruturada com YAML e JSDoc.",
+      title: 'Pocket Store API - Jogos Independentes',
+      version: '1.0.0',
+      description: 'API RESTful para Marketplace de jogos independentes com suporte a carrinho, checkout, biblioteca de licenças e avaliações.',
     },
     servers: [
       {
         url: BASE_URL,
-        description: "Servidor da API",
+        description: 'Servidor Local da API',
       },
     ],
   },
-  apis: [
-    // Lê os endpoints documentados nos comentários das rotas
-    "./src/infrastructure/http/routes/*.ts",
-    "./dist/infrastructure/http/routes/*.js",
-    // Lê os modelos de dados centralizados no YAML
-    "./src/infrastructure/http/docs/*.yaml",
-  ],
+  apis: ['./src/infrastructure/http/routes/*.ts', './src/http/routes/*.ts'],
 };
 
 export const swaggerSpec = swaggerJSDoc(options);

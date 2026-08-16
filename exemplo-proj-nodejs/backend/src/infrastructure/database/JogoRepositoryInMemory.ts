@@ -1,22 +1,11 @@
 import { Jogo } from "@entities/Jogo";
 import { IJogoRepository } from "@repositories/IJogoRepository";
 
-// Escopo global do módulo para simular um banco de dados único.
-let jogos: Jogo[] = [
-  {
-    id: 1,
-    titulo: "Cat's Cafeteria",
-    descricao: "Jogo de gerenciamento e aventura.",
-    preco: 29.90,
-    requisitosMinimos: "4GB RAM, GTX 660",
-    categoriaId: 1,
-    desenvolvedorId: 10
-  }
-];
-let proximoId = 2;
+let jogos: Jogo[] = [];
+let proximoId = 1;
 
 export class JogoRepositoryInMemory implements IJogoRepository {
-  listarTodas(): Jogo[] {
+  listarTodos(): Jogo[] {
     return jogos;
   }
 
@@ -29,26 +18,34 @@ export class JogoRepositoryInMemory implements IJogoRepository {
   }
 
   criar(dados: Omit<Jogo, "id">): Jogo {
-    const novoJogo: Jogo = {
-      id: proximoId++,
-      ...dados,
-    };
+    const novoJogo: Jogo = { id: proximoId++, ...dados };
     jogos.push(novoJogo);
     return novoJogo;
   }
 
   atualizar(id: number, dados: Partial<Jogo>): Jogo | undefined {
-    const index = jogos.findIndex((j) => j.id === id);
-    if (index === -1) return undefined;
+    const jogoExistente = jogos.find((j) => j.id === id);
+    if (!jogoExistente) return undefined;
 
-    jogos[index] = { ...jogos[index], ...dados, id };
-    return jogos[index];
+    const jogoAtualizado: Jogo = {
+      id,
+      titulo: dados.titulo ?? jogoExistente.titulo,
+      descricao: dados.descricao ?? jogoExistente.descricao,
+      preco: dados.preco ?? jogoExistente.preco,
+      requisitosMinimos: dados.requisitosMinimos ?? jogoExistente.requisitosMinimos,
+      categoriaId: dados.categoriaId ?? jogoExistente.categoriaId,
+      desenvolvedorId: dados.desenvolvedorId ?? jogoExistente.desenvolvedorId,
+    };
+
+    const index = jogos.findIndex((j) => j.id === id);
+    jogos[index] = jogoAtualizado;
+
+    return jogoAtualizado;
   }
 
   excluir(id: number): boolean {
     const tamanhoInicial = jogos.length;
-    jogos = tarefas.filter((j) => j.id !== id);
-
+    jogos = jogos.filter((j) => j.id !== id);
     return jogos.length < tamanhoInicial;
   }
 }

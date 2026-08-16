@@ -1,16 +1,14 @@
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './infrastructure/http/docs/swagger';
-import jogoRoutes from './infrastructure/http/routes/jogo.routes';
-import lojaRoutes from './infrastructure/http/routes/loja.routes';
+import { swaggerSpec } from './docs/swagger';
+import jogoRoutes from './routes/jogo.routes';
+import lojaRoutes from './routes/loja.routes';
 
 const app = express();
 app.use(express.json());
 
-// Rota do Swagger Interativo
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Rotas da API
 app.use('/api/v1', jogoRoutes);
 app.use('/api/v1', lojaRoutes);
 
