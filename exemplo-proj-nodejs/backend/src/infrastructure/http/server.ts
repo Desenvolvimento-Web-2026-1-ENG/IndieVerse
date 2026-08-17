@@ -18,3 +18,8 @@ app.listen(PORT, () => {
   console.log(`\n✅ Servidor Pocket Store rodando na porta ${PORT}`);
   console.log(`📄 Documentação interativa em: http://localhost:${PORT}/api-docs`);
 });
+
+app.get('/api-docs-json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
