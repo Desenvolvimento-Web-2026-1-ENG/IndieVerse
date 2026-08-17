@@ -65,6 +65,41 @@ router.get("/carrinho/:jogadorId", (req, res) => {
 
 /**
  * @swagger
+ * /api/v1/carrinho/{jogadorId}/item/{jogoId}:
+ *   delete:
+ *     summary: Remove um item específico do carrinho do jogador
+ *     tags: [Carrinho e Checkout]
+ *     parameters:
+ *       - in: path
+ *         name: jogadorId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: jogoId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Item removido do carrinho com sucesso
+ *       404:
+ *         description: Item não encontrado no carrinho
+ */
+router.delete("/carrinho/:jogadorId/item/:jogoId", (req, res) => {
+  const jogadorId = Number(req.params.jogadorId);
+  const jogoId = Number(req.params.jogoId);
+
+  const removido = carrinhoRepository.removerItem(jogadorId, jogoId);
+  if (!removido) {
+    return res.status(404).json({ mensagem: "Item não encontrado no carrinho." });
+  }
+
+  return res.status(204).send();
+});
+
+/**
+ * @swagger
  * /api/v1/carrinho/checkout:
  *   post:
  *     summary: Converte itens do carrinho em licenças da biblioteca do jogador e limpa o carrinho
@@ -177,6 +212,28 @@ router.post("/avaliacoes", (req, res) => {
   });
 
   return res.status(201).json(avaliacao);
+});
+
+/**
+ * @swagger
+ * /api/v1/avaliacoes/jogo/{jogoId}:
+ *   get:
+ *     summary: Lista todas as avaliações de um jogo específico
+ *     tags: [Avaliações]
+ *     parameters:
+ *       - in: path
+ *         name: jogoId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de avaliações do jogo obtida com sucesso
+ */
+router.get("/avaliacoes/jogo/:jogoId", (req, res) => {
+  const jogoId = Number(req.params.jogoId);
+  const avaliacoes = avaliacaoRepository.buscarPorJogo(jogoId);
+  return res.status(200).json(avaliacoes);
 });
 
 export default router;

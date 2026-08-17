@@ -1,8 +1,13 @@
 import { Categoria } from "@entities/Categoria";
 import { ICategoriaRepository } from "@repositories/ICategoriaRepository";
 
-let categorias: Categoria[] = [];
-let proximoId = 1;
+let categorias: Categoria[] = [
+  { id: 1, nome: "Metroidvania" },
+  { id: 2, nome: "Ação & Aventura" },
+  { id: 3, nome: "RPG" },
+  { id: 4, nome: "Casual / Simulação" }
+];
+let proximoId = 5;
 
 export class CategoriaRepositoryInMemory implements ICategoriaRepository {
   listarTodas(): Categoria[] {

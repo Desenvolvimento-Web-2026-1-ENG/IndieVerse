@@ -19,4 +19,13 @@ export class CarrinhoRepositoryInMemory {
   limparCarrinho(jogadorId: number): void {
     carrinho = carrinho.filter((item) => item.jogadorId !== jogadorId);
   }
+
+  removerItem(jogadorId: number, jogoId: number): boolean {
+    const index = carrinho.findIndex(
+      (item) => item.jogadorId === jogadorId && item.jogoId === jogoId
+    );
+    if (index === -1) return false;
+    carrinho.splice(index, 1);
+    return true;
+  }
 }
