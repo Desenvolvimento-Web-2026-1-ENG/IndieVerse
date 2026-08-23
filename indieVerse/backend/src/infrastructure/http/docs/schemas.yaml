@@ -1,0 +1,49 @@
+components:
+  schemas:
+    Tarefa:
+      type: object
+      properties:
+        id:
+          type: integer
+        titulo:
+          type: string
+        descricao:
+          type: string
+        concluida:
+          type: boolean
+        categoriaId:
+          type: integer
+          nullable: true
+
+    CriarTarefaDTO:
+      type: object
+      required:
+        - titulo
+      properties:
+        titulo:
+          type: string
+        descricao:
+          type: string
+        categoriaId:
+          type: integer
+
+    Categoria:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        cor:
+          type: string
+
+    CriarCategoriaDTO:
+      type: object
+      required:
+        - nome
+        - cor
+      properties:
+        nome:
+          type: string
+        cor:
+          type: string
