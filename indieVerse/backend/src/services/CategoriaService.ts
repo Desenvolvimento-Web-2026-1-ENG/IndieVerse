@@ -42,7 +42,7 @@ export class CategoriaService {
   }
 
   deletar(id: number): void {
-    const deletada = this.categoriaRepository.deletar(id);
+    const deletada = this.categoriaRepository.excluir(id);
     if (!deletada) {
       throw new Error("Categoria não encontrada.");
     }
