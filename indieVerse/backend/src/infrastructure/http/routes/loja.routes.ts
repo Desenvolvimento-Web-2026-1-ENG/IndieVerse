@@ -1,12 +1,22 @@
 import { Router } from "express";
+import { LojaController } from "../../../interfaces/controllers/LojaController";
+import { LojaService } from "../../../services/LojaService";
 import { CarrinhoRepositoryInMemory } from "@infrastructure/database/CarrinhoRepositoryInMemory";
 import { BibliotecaRepositoryInMemory } from "@infrastructure/database/BibliotecaRepositoryInMemory";
 import { AvaliacaoRepositoryInMemory } from "@infrastructure/database/AvaliacaoRepositoryInMemory";
 
 const router = Router();
+
 const carrinhoRepository = new CarrinhoRepositoryInMemory();
 const bibliotecaRepository = new BibliotecaRepositoryInMemory();
 const avaliacaoRepository = new AvaliacaoRepositoryInMemory();
+
+const lojaService = new LojaService(
+  carrinhoRepository,
+  bibliotecaRepository,
+  avaliacaoRepository
+);
+const lojaController = new LojaController(lojaService);
 
 /**
  * @swagger
@@ -32,14 +42,7 @@ const avaliacaoRepository = new AvaliacaoRepositoryInMemory();
  *       400:
  *         description: Dados obrigatórios ausentes
  */
-router.post("/carrinho", (req, res) => {
-  const { jogadorId, jogoId } = req.body;
-  if (!jogadorId || !jogoId) {
-    return res.status(400).json({ mensagem: "jogadorId e jogoId são obrigatórios." });
-  }
-  const carrinho = carrinhoRepository.adicionarItem(Number(jogadorId), Number(jogoId));
-  return res.status(201).json({ mensagem: "Item adicionado ao carrinho com sucesso.", carrinho });
-});
+router.post("/carrinho", (req, res) => lojaController.adicionarAoCarrinho(req, res));
 
 /**
  * @swagger
@@ -57,11 +60,7 @@ router.post("/carrinho", (req, res) => {
  *       200:
  *         description: Estado atual do carrinho obtido com sucesso
  */
-router.get("/carrinho/:jogadorId", (req, res) => {
-  const { jogadorId } = req.params;
-  const carrinho = carrinhoRepository.obterCarrinho(Number(jogadorId));
-  return res.status(200).json(carrinho);
-});
+router.get("/carrinho/:jogadorId", (req, res) => lojaController.obterCarrinho(req, res));
 
 /**
  * @swagger
@@ -86,17 +85,9 @@ router.get("/carrinho/:jogadorId", (req, res) => {
  *       404:
  *         description: Item não encontrado no carrinho
  */
-router.delete("/carrinho/:jogadorId/item/:jogoId", (req, res) => {
-  const jogadorId = Number(req.params.jogadorId);
-  const jogoId = Number(req.params.jogoId);
-
-  const removido = carrinhoRepository.removerItem(jogadorId, jogoId);
-  if (!removido) {
-    return res.status(404).json({ mensagem: "Item não encontrado no carrinho." });
-  }
-
-  return res.status(204).send();
-});
+router.delete("/carrinho/:jogadorId/item/:jogoId", (req, res) =>
+  lojaController.removerDoCarrinho(req, res)
+);
 
 /**
  * @swagger
@@ -116,35 +107,9 @@ router.delete("/carrinho/:jogadorId/item/:jogoId", (req, res) => {
  *       400:
  *         description: Carrinho está vazio ou não está aberto para checkout
  */
-router.put("/carrinho/:jogadorId/checkout", (req, res) => {
-  const jogadorId = Number(req.params.jogadorId);
-
-  if (!jogadorId) {
-    return res.status(400).json({ mensagem: "jogadorId inválido." });
-  }
-
-  const carrinho = carrinhoRepository.obterCarrinho(jogadorId);
-
-  if (carrinho.status !== "ABERTO") {
-    return res.status(400).json({ mensagem: `O carrinho atual não está ABERTO (Status atual: ${carrinho.status}).` });
-  }
-
-  if (carrinho.itens.length === 0) {
-    return res.status(400).json({ mensagem: "O carrinho está vazio." });
-  }
-
-  const licencasGeradas = carrinho.itens.map((item) =>
-    bibliotecaRepository.adicionarLicenca(item.jogadorId, item.jogoId)
-  );
-
-  const carrinhoAtualizado = carrinhoRepository.atualizarStatus(jogadorId, "FINALIZADO");
-
-  return res.status(200).json({
-    mensagem: "Checkout realizado com sucesso! Carrinho finalizado e zerado.",
-    carrinho: carrinhoAtualizado,
-    licencas: licencasGeradas,
-  });
-});
+router.put("/carrinho/:jogadorId/checkout", (req, res) =>
+  lojaController.realizarCheckout(req, res)
+);
 
 /**
  * @swagger
@@ -162,11 +127,9 @@ router.put("/carrinho/:jogadorId/checkout", (req, res) => {
  *       200:
  *         description: Lista de licenças do jogador
  */
-router.get("/biblioteca/:jogadorId", (req, res) => {
-  const { jogadorId } = req.params;
-  const licencas = bibliotecaRepository.buscarPorJogador(Number(jogadorId));
-  return res.status(200).json(licencas);
-});
+router.get("/biblioteca/:jogadorId", (req, res) =>
+  lojaController.obterBiblioteca(req, res)
+);
 
 /**
  * @swagger
@@ -197,25 +160,7 @@ router.get("/biblioteca/:jogadorId", (req, res) => {
  *       403:
  *         description: O jogador só pode avaliar jogos que possui na biblioteca
  */
-router.post("/avaliacoes", (req, res) => {
-  const { jogadorId, jogoId, nota, comentario } = req.body;
-
-  if (!bibliotecaRepository.possuiLicenca(jogadorId, jogoId)) {
-    return res.status(403).json({
-      mensagem: "Você só pode avaliar jogos que comprou e estão em sua biblioteca.",
-    });
-  }
-
-  const avaliacao = avaliacaoRepository.criar({
-    jogadorId,
-    jogoId,
-    nota,
-    comentario,
-    dataCriacao: new Date(),
-  });
-
-  return res.status(201).json(avaliacao);
-});
+router.post("/avaliacoes", (req, res) => lojaController.criarAvaliacao(req, res));
 
 /**
  * @swagger
@@ -233,10 +178,8 @@ router.post("/avaliacoes", (req, res) => {
  *       200:
  *         description: Lista de avaliações do jogo obtida com sucesso
  */
-router.get("/avaliacoes/jogo/:jogoId", (req, res) => {
-  const jogoId = Number(req.params.jogoId);
-  const avaliacoes = avaliacaoRepository.buscarPorJogo(jogoId);
-  return res.status(200).json(avaliacoes);
-});
+router.get("/avaliacoes/jogo/:jogoId", (req, res) =>
+  lojaController.listarAvaliacoesPorJogo(req, res)
+);
 
 export default router;

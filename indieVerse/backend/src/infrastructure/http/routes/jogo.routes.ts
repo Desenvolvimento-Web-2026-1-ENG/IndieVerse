@@ -1,8 +1,13 @@
 import { Router } from "express";
 import { JogoController } from "../../../interfaces/controllers/JogoController";
+import { JogoService } from "../../../services/JogoService";
+import { JogoRepositoryInMemory } from "../../database/JogoRepositoryInMemory";
 
 const router = Router();
-const jogoController = new JogoController();
+
+const jogoRepository = new JogoRepositoryInMemory();
+const jogoService = new JogoService(jogoRepository);
+const jogoController = new JogoController(jogoService);
 
 /**
  * @swagger
