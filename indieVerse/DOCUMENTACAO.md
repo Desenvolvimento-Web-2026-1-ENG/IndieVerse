@@ -33,15 +33,18 @@ A documentação segue os princípios da Arquitetura Limpa, onde a interface e e
 | **Desenvolvedores** | `GET` | `/api/v1/desenvolvedores/:id` | Busca perfil do desenvolvedor por ID |
 | **Desenvolvedores** | `PUT` | `/api/v1/desenvolvedores/:id` | Atualiza perfil do desenvolvedor |
 | **Desenvolvedores** | `DELETE` | `/api/v1/desenvolvedores/:id` | Remove um desenvolvedor da plataforma |
-| **Categorias** | `GET` | `/api/v1/categorias` | Lista as categorias de jogos disponíveis (ex: Metroidvania, RPG) |
+| **Categorias** | `GET` | `/api/v1/categorias` | Lista as categorias de jogos disponíveis |
 | **Categorias** | `POST` | `/api/v1/categorias` | Cadastra uma nova categoria de jogo |
+| **Categorias** | `GET` | `/api/v1/categorias/:id` | Busca detalhes de uma categoria por ID |
+| **Categorias** | `PUT` | `/api/v1/categorias/:id` | Atualiza o nome de uma categoria por ID |
+| **Categorias** | `DELETE` | `/api/v1/categorias/:id` | Deleta uma categoria por ID |
 | **Jogos** | `POST` | `/api/v1/jogos` | Cadastra um novo jogo (vincular ao `desenvolvedorId`) |
 | **Jogos** | `GET` | `/api/v1/jogos` | Lista todos os jogos independentes cadastrados na vitrine |
 | **Jogos** | `GET` | `/api/v1/jogos/:id` | Busca detalhes completos de um jogo pelo ID |
 | **Carrinho e Checkout** | `POST` | `/api/v1/carrinho` | Adiciona um jogo ao carrinho de um jogador |
 | **Carrinho e Checkout** | `GET` | `/api/v1/carrinho/:jogadorId` | Lista os itens contidos no carrinho do jogador |
 | **Carrinho e Checkout** | `DELETE` | `/api/v1/carrinho/:jogadorId/item/:jogoId` | Remove um item específico do carrinho antes do checkout |
-| **Carrinho e Checkout** | `POST` | `/api/v1/carrinho/checkout` | Converte os itens do carrinho em licenças na biblioteca e limpa o carrinho |
+| **Carrinho e Checkout** | `PUT` | `/api/v1/carrinho/:jogadorId/checkout` | Altera status do carrinho para FINALIZADO, gera licenças e zera o carrinho |
 | **Biblioteca Pessoal** | `GET` | `/api/v1/biblioteca/:jogadorId` | Lista todas as licenças de jogos adquiridas pelo jogador |
 | **Avaliações** | `POST` | `/api/v1/avaliacoes` | Registra uma avaliação/review (valida permissão pós-compra) |
 | **Avaliações** | `GET` | `/api/v1/avaliacoes/jogo/:jogoId` | Lista todas as avaliações publicadas de um jogo |
@@ -68,7 +71,7 @@ A documentação segue os princípios da Arquitetura Limpa, onde a interface e e
 }
 ```
 
-### 4.2. Checkout (POST /api/v1/carrinho/checkout)
+### 4.2. Checkout (`PUT /api/v1/carrinho/checkout`)
 ```json
 {
   "jogadorId": 1
@@ -85,6 +88,50 @@ A documentação segue os princípios da Arquitetura Limpa, onde a interface e e
 }
 ```
 
+### 4.4. Respostas de Sucesso e Erros Espetados
+
+#### Sucesso — Checkout Realizado (`200 OK`)
+```json
+{
+  "mensagem": "Checkout realizado com sucesso! Carrinho finalizado e zerado.",
+  "carrinho": {
+    "id": 1,
+    "jogadorId": 1,
+    "status": "FINALIZADO",
+    "itens": []
+  },
+  "licencas": [
+    {
+      "id": 1,
+      "jogadorId": 1,
+      "jogoId": 1,
+      "dataAquisicao": "2026-08-23T16:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### Erro — Tentativa de Avaliar Jogo Sem Licença (403 Forbidden)
+```json
+{
+  "mensagem": "Você só pode avaliar jogos que comprou e estão em sua biblioteca."
+}
+```
+
+#### Erro — Recurso Não Encontrado (404 Not Found)
+```json
+{
+  "mensagem": "Jogo não encontrado."
+}
+```
+
+#### Erro — Campos Obrigatórios Ausentes (400 Bad Request)
+```json
+{
+  "mensagem": "Nome do Estúdio e Email são obrigatórios."
+}
+```
+
 ## 5. Endpoints de Documentação no Servidor
 Após iniciar a aplicação (npm run dev), a documentação interativa e os artefatos de integração estarão acessíveis através dos seguintes caminhos HTTP:
 
@@ -92,3 +139,21 @@ Após iniciar a aplicação (npm run dev), a documentação interativa e os arte
 
 - Especificação JSON (Importação no Postman): http://localhost:8080/api-docs-json
 
+## 6. Como Executar o Projeto Localmente
+
+1. Clone o repositório:
+   git clone <URL_DO_REPOSITORIO>
+
+2. Instale as dependências:
+   npm install
+
+3. Inicie o servidor em modo de desenvolvimento:
+   npm run dev
+
+4. Acesse a documentação no navegador:
+   http://localhost:8080/api-docs
+
+
+### Autor
+
+- [@PHCordeiro](https://www.github.com/octokatherine)
