@@ -37,15 +37,15 @@ router.post("/carrinho", (req, res) => {
   if (!jogadorId || !jogoId) {
     return res.status(400).json({ mensagem: "jogadorId e jogoId são obrigatórios." });
   }
-  carrinhoRepository.adicionarItem(jogadorId, jogoId);
-  return res.status(201).json({ mensagem: "Item adicionado ao carrinho com sucesso." });
+  const carrinho = carrinhoRepository.adicionarItem(Number(jogadorId), Number(jogoId));
+  return res.status(201).json({ mensagem: "Item adicionado ao carrinho com sucesso.", carrinho });
 });
 
 /**
  * @swagger
  * /api/v1/carrinho/{jogadorId}:
  *   get:
- *     summary: Lista todos os itens do carrinho do jogador
+ *     summary: Lista o carrinho atual e seus itens pelo ID do jogador
  *     tags: [Carrinho e Checkout]
  *     parameters:
  *       - in: path
@@ -55,12 +55,12 @@ router.post("/carrinho", (req, res) => {
  *           type: integer
  *     responses:
  *       200:
- *         description: Lista de itens do carrinho obtida com sucesso
+ *         description: Estado atual do carrinho obtido com sucesso
  */
 router.get("/carrinho/:jogadorId", (req, res) => {
   const { jogadorId } = req.params;
-  const itens = carrinhoRepository.obterCarrinho(Number(jogadorId));
-  return res.status(200).json(itens);
+  const carrinho = carrinhoRepository.obterCarrinho(Number(jogadorId));
+  return res.status(200).json(carrinho);
 });
 
 /**
@@ -100,45 +100,48 @@ router.delete("/carrinho/:jogadorId/item/:jogoId", (req, res) => {
 
 /**
  * @swagger
- * /api/v1/carrinho/checkout:
- *   post:
- *     summary: Converte itens do carrinho em licenças da biblioteca do jogador e limpa o carrinho
+ * /api/v1/carrinho/{jogadorId}/checkout:
+ *   put:
+ *     summary: Atualiza o status do carrinho para FINALIZADO (Checkout), transfere itens para a biblioteca e zera o carrinho
  *     tags: [Carrinho e Checkout]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [jogadorId]
- *             properties:
- *               jogadorId:
- *                 type: integer
+ *     parameters:
+ *       - in: path
+ *         name: jogadorId
+ *         required: true
+ *         schema:
+ *           type: integer
  *     responses:
  *       200:
- *         description: Compra realizada com sucesso e licenças geradas
+ *         description: Checkout realizado com sucesso, status alterado para FINALIZADO e carrinho zerado
  *       400:
- *         description: Carrinho vazio ou ID inválido
+ *         description: Carrinho está vazio ou não está aberto para checkout
  */
-router.post("/carrinho/checkout", (req, res) => {
-  const { jogadorId } = req.body;
+router.put("/carrinho/:jogadorId/checkout", (req, res) => {
+  const jogadorId = Number(req.params.jogadorId);
+
   if (!jogadorId) {
-    return res.status(400).json({ mensagem: "jogadorId é obrigatório." });
+    return res.status(400).json({ mensagem: "jogadorId inválido." });
   }
 
-  const itens = carrinhoRepository.obterCarrinho(Number(jogadorId));
-  if (itens.length === 0) {
+  const carrinho = carrinhoRepository.obterCarrinho(jogadorId);
+
+  if (carrinho.status !== "ABERTO") {
+    return res.status(400).json({ mensagem: `O carrinho atual não está ABERTO (Status atual: ${carrinho.status}).` });
+  }
+
+  if (carrinho.itens.length === 0) {
     return res.status(400).json({ mensagem: "O carrinho está vazio." });
   }
 
-  const licencasGeradas = itens.map((item) =>
+  const licencasGeradas = carrinho.itens.map((item) =>
     bibliotecaRepository.adicionarLicenca(item.jogadorId, item.jogoId)
   );
 
-  carrinhoRepository.limparCarrinho(Number(jogadorId));
+  const carrinhoAtualizado = carrinhoRepository.atualizarStatus(jogadorId, "FINALIZADO");
 
   return res.status(200).json({
-    mensagem: "Compra realizada com sucesso!",
+    mensagem: "Checkout realizado com sucesso! Carrinho finalizado e zerado.",
+    carrinho: carrinhoAtualizado,
     licencas: licencasGeradas,
   });
 });
