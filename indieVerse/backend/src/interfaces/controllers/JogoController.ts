@@ -1,48 +1,30 @@
 import { Request, Response } from "express";
-import { JogoRepositoryInMemory } from "@infrastructure/database/JogoRepositoryInMemory";
-
-const jogoRepository = new JogoRepositoryInMemory();
+import { JogoService } from "../../services/JogoService";
 
 export class JogoController {
-  listar(req: Request, res: Response): Response {
-    const jogos = jogoRepository.listarTodos();
+  constructor(private jogoService: JogoService) {}
+
+  listar = (req: Request, res: Response): Response => {
+    const jogos = this.jogoService.listarTodos();
     return res.status(200).json(jogos);
-  }
+  };
 
-  criar(req: Request, res: Response): Response {
-    const {
-      titulo,
-      descricao,
-      preco,
-      requisitosMinimos,
-      categoriaId,
-      desenvolvedorId,
-    } = req.body;
-
-    if (!titulo || !preco || !categoriaId || !desenvolvedorId) {
-      return res.status(400).json({ mensagem: "Campos obrigatórios ausentes." });
+  buscarPorId = (req: Request, res: Response): Response => {
+    try {
+      const { id } = req.params;
+      const jogo = this.jogoService.buscarPorId(Number(id));
+      return res.status(200).json(jogo);
+    } catch (error: any) {
+      return res.status(404).json({ mensagem: error.message });
     }
+  };
 
-    const novoJogo = jogoRepository.criar({
-      titulo,
-      descricao: descricao ?? "",
-      preco,
-      requisitosMinimos: requisitosMinimos ?? "",
-      categoriaId,
-      desenvolvedorId,
-    });
-
-    return res.status(201).json(novoJogo);
-  }
-
-  buscarPorId(req: Request, res: Response): Response {
-    const { id } = req.params;
-    const jogo = jogoRepository.buscarPorId(Number(id));
-
-    if (!jogo) {
-      return res.status(404).json({ mensagem: "Jogo não encontrado." });
+  criar = (req: Request, res: Response): Response => {
+    try {
+      const novoJogo = this.jogoService.criar(req.body);
+      return res.status(201).json(novoJogo);
+    } catch (error: any) {
+      return res.status(400).json({ mensagem: error.message });
     }
-
-    return res.status(200).json(jogo);
-  }
+  };
 }

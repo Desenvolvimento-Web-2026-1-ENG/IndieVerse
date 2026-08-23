@@ -1,8 +1,13 @@
 import { Router } from "express";
+import { DesenvolvedorController } from "../../../interfaces/controllers/DesenvolvedorController";
+import { DesenvolvedorService } from "../../../services/DesenvolvedorService";
 import { DesenvolvedorRepositoryInMemory } from "@infrastructure/database/DesenvolvedorRepositoryInMemory";
 
 const router = Router();
+
 const devRepository = new DesenvolvedorRepositoryInMemory();
+const devService = new DesenvolvedorService(devRepository);
+const devController = new DesenvolvedorController(devService);
 
 /**
  * @swagger
@@ -34,18 +39,8 @@ const devRepository = new DesenvolvedorRepositoryInMemory();
  *       200:
  *         description: Lista de desenvolvedores
  */
-router.post("/desenvolvedores", (req, res) => {
-  const { nomeEstudio, email, siteOuRedeSocial } = req.body;
-  if (!nomeEstudio || !email) {
-    return res.status(400).json({ mensagem: "Nome do Estúdio e Email são obrigatórios." });
-  }
-  const dev = devRepository.criar({ nomeEstudio, email, siteOuRedeSocial });
-  return res.status(201).json(dev);
-});
-
-router.get("/desenvolvedores", (req, res) => {
-  return res.status(200).json(devRepository.listarTodos());
-});
+router.post("/desenvolvedores", (req, res) => devController.criar(req, res));
+router.get("/desenvolvedores", (req, res) => devController.listarTodos(req, res));
 
 /**
  * @swagger
@@ -106,22 +101,8 @@ router.get("/desenvolvedores", (req, res) => {
  *       404:
  *         description: Desenvolvedor não encontrado
  */
-router.get("/desenvolvedores/:id", (req, res) => {
-  const dev = devRepository.buscarPorId(Number(req.params.id));
-  if (!dev) return res.status(404).json({ mensagem: "Desenvolvedor não encontrado." });
-  return res.status(200).json(dev);
-});
-
-router.put("/desenvolvedores/:id", (req, res) => {
-  const dev = devRepository.atualizar(Number(req.params.id), req.body);
-  if (!dev) return res.status(404).json({ mensagem: "Desenvolvedor não encontrado." });
-  return res.status(200).json(dev);
-});
-
-router.delete("/desenvolvedores/:id", (req, res) => {
-  const deletado = devRepository.deletar(Number(req.params.id));
-  if (!deletado) return res.status(404).json({ mensagem: "Desenvolvedor não encontrado." });
-  return res.status(204).send();
-});
+router.get("/desenvolvedores/:id", (req, res) => devController.buscarPorId(req, res));
+router.put("/desenvolvedores/:id", (req, res) => devController.atualizar(req, res));
+router.delete("/desenvolvedores/:id", (req, res) => devController.deletar(req, res));
 
 export default router;

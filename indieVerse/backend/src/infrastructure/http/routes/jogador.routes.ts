@@ -1,8 +1,13 @@
 import { Router } from "express";
+import { JogadorController } from "../../../interfaces/controllers/JogadorController";
+import { JogadorService } from "../../../services/JogadorService";
 import { JogadorRepositoryInMemory } from "@infrastructure/database/JogadorRepositoryInMemory";
 
 const router = Router();
+
 const jogadorRepository = new JogadorRepositoryInMemory();
+const jogadorService = new JogadorService(jogadorRepository);
+const jogadorController = new JogadorController(jogadorService);
 
 /**
  * @swagger
@@ -32,18 +37,8 @@ const jogadorRepository = new JogadorRepositoryInMemory();
  *       200:
  *         description: Lista de jogadores cadastrados
  */
-router.post("/jogadores", (req, res) => {
-  const { nome, email } = req.body;
-  if (!nome || !email) {
-    return res.status(400).json({ mensagem: "Nome e Email são obrigatórios." });
-  }
-  const jogador = jogadorRepository.criar({ nome, email });
-  return res.status(201).json(jogador);
-});
-
-router.get("/jogadores", (req, res) => {
-  return res.status(200).json(jogadorRepository.listarTodos());
-});
+router.post("/jogadores", (req, res) => jogadorController.criar(req, res));
+router.get("/jogadores", (req, res) => jogadorController.listarTodos(req, res));
 
 /**
  * @swagger
@@ -102,22 +97,8 @@ router.get("/jogadores", (req, res) => {
  *       404:
  *         description: Jogador não encontrado
  */
-router.get("/jogadores/:id", (req, res) => {
-  const jogador = jogadorRepository.buscarPorId(Number(req.params.id));
-  if (!jogador) return res.status(404).json({ mensagem: "Jogador não encontrado." });
-  return res.status(200).json(jogador);
-});
-
-router.put("/jogadores/:id", (req, res) => {
-  const jogador = jogadorRepository.atualizar(Number(req.params.id), req.body);
-  if (!jogador) return res.status(404).json({ mensagem: "Jogador não encontrado." });
-  return res.status(200).json(jogador);
-});
-
-router.delete("/jogadores/:id", (req, res) => {
-  const deletado = jogadorRepository.deletar(Number(req.params.id));
-  if (!deletado) return res.status(404).json({ mensagem: "Jogador não encontrado." });
-  return res.status(204).send();
-});
+router.get("/jogadores/:id", (req, res) => jogadorController.buscarPorId(req, res));
+router.put("/jogadores/:id", (req, res) => jogadorController.atualizar(req, res));
+router.delete("/jogadores/:id", (req, res) => jogadorController.deletar(req, res));
 
 export default router;
