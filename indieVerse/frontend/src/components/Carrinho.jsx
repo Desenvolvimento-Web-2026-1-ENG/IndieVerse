@@ -14,84 +14,83 @@ export default function Carrinho({ setTelaAtual }) {
     carregarCarrinho();
   }, [usuario]);
 
-    const carregarCarrinho = async () => {
-        try {
-            setCarregando(true);
-            const [resCarrinho, resJogos] = await Promise.all([
-            axios.get(`/api/v1/carrinho/${usuario.id}`).catch(() => ({ data: [] })),
-            axios.get('/api/v1/jogos').catch(() => ({ data: [] }))
-            ]);
+  const carregarCarrinho = async () => {
+    try {
+      setCarregando(true);
+      const [resCarrinho, resJogos] = await Promise.all([
+        axios.get(`/api/v1/carrinho/${usuario.id}`).catch(() => ({ data: [] })),
+        axios.get('/api/v1/jogos').catch(() => ({ data: [] }))
+      ]);
 
-            const todosJogos = Array.isArray(resJogos.data) ? resJogos.data : [];
-            
-            let dados = resCarrinho.data;
-            let listaItens = [];
+      const todosJogos = Array.isArray(resJogos.data) ? resJogos.data : [];
+      let dados = resCarrinho.data;
+      let listaItens = [];
 
-            if (Array.isArray(dados)) {
-            listaItens = dados;
-            } else if (dados && Array.isArray(dados.itens)) {
-            listaItens = dados.itens;
-            } else if (dados && Array.isArray(dados.carrinho)) {
-            listaItens = dados.carrinho;
-            } else if (dados && typeof dados === 'object') {
-            listaItens = dados.jogos || dados.itensCarrinho || [];
-            }
+      if (Array.isArray(dados)) {
+        listaItens = dados;
+      } else if (dados && Array.isArray(dados.itens)) {
+        listaItens = dados.itens;
+      } else if (dados && Array.isArray(dados.carrinho)) {
+        listaItens = dados.carrinho;
+      } else if (dados && typeof dados === 'object') {
+        listaItens = dados.jogos || dados.itensCarrinho || [];
+      }
 
-            const itensCompletos = listaItens.map((item) => {
-            const idDoJogo = item.jogoId || item.idJogo || item.id;
-            const jogoEncontrado = todosJogos.find((j) => String(j.id) === String(idDoJogo)) || item.Jogo || item.jogo;
+      const itensCompletos = listaItens.map((item) => {
+        const idDoJogo = item.jogoId || item.idJogo || item.id;
+        const jogoEncontrado = todosJogos.find((j) => String(j.id) === String(idDoJogo)) || item.Jogo || item.jogo;
 
-            return {
-                ...item,
-                idCarrinho: item.id, 
-                titulo: jogoEncontrado?.titulo || item.titulo || `Jogo #${idDoJogo}`,
-                preco: jogoEncontrado?.preco ?? item.preco ?? 0
-            };
-            });
+        return {
+          ...item,
+          idCarrinho: item.id,
+          titulo: jogoEncontrado?.titulo || item.titulo || `Jogo #${idDoJogo}`,
+          preco: jogoEncontrado?.preco ?? item.preco ?? 0
+        };
+      });
 
-            setItens(itensCompletos);
-        } catch (error) {
-            console.error('Erro ao carregar carrinho:', error);
-            setItens([]);
-        } finally {
-            setCarregando(false);
-        }
-    };
+      setItens(itensCompletos);
+    } catch (error) {
+      console.error('Erro ao carregar carrinho:', error);
+      setItens([]);
+    } finally {
+      setCarregando(false);
+    }
+  };
 
-    const removerDoCarrinho = async (item) => {
-        const idJogo = item.jogoId || item.idJogo || item.Jogo?.id || item.jogo?.id || item.id;
+  const removerDoCarrinho = async (item) => {
+    const idJogo = item.jogoId || item.idJogo || item.Jogo?.id || item.jogo?.id || item.id;
 
-        if (!idJogo) {
-            console.error('Não foi possível identificar o ID do jogo para remoção:', item);
-            setToast({ mensagem: 'Erro ao identificar o jogo.', tipo: 'erro' });
-            return;
-        }
+    if (!idJogo) {
+      console.error('Não foi possível identificar o ID do jogo para remoção:', item);
+      setToast({ mensagem: 'Erro ao identificar o jogo.', tipo: 'erro' });
+      return;
+    }
 
-        try {
-            await axios.delete(`/api/v1/carrinho/${usuario.id}/item/${idJogo}`);
-            setItens((prev) => prev.filter((i) => i !== item));
-            setToast({ mensagem: 'Item removido do carrinho!', tipo: 'sucesso' });
-        } catch (error) {
-            console.error('Erro ao remover do carrinho:', error);
-            setToast({ mensagem: 'Erro ao remover item do carrinho.', tipo: 'erro' });
-        }
-    };
+    try {
+      await axios.delete(`/api/v1/carrinho/${usuario.id}/item/${idJogo}`);
+      setItens((prev) => prev.filter((i) => i !== item));
+      setToast({ mensagem: 'Item removido do carrinho!', tipo: 'sucesso' });
+    } catch (error) {
+      console.error('Erro ao remover do carrinho:', error);
+      setToast({ mensagem: 'Erro ao remover item do carrinho.', tipo: 'erro' });
+    }
+  };
 
-    const finalizarCompra = async () => {
-        if (itens.length === 0) return;
-        setFinalizando(true);
+  const finalizarCompra = async () => {
+    if (itens.length === 0) return;
+    setFinalizando(true);
 
-        try {
-            await axios.put(`/api/v1/carrinho/${usuario.id}/checkout`);
-            setItens([]);
-            setToast({ mensagem: 'Compra realizada com sucesso! Jogos adicionados à biblioteca.', tipo: 'sucesso' });
-        } catch (error) {
-            console.error('Erro ao finalizar compra:', error);
-            setToast({ mensagem: 'Erro ao processar a compra.', tipo: 'erro' });
-        } finally {
-            setFinalizando(false);
-        }
-    };
+    try {
+      await axios.put(`/api/v1/carrinho/${usuario.id}/checkout`);
+      setItens([]);
+      setToast({ mensagem: 'Compra realizada com sucesso! Jogos adicionados à biblioteca.', tipo: 'sucesso' });
+    } catch (error) {
+      console.error('Erro ao finalizar compra:', error);
+      setToast({ mensagem: 'Erro ao processar a compra.', tipo: 'erro' });
+    } finally {
+      setFinalizando(false);
+    }
+  };
 
   const extrairPreco = (item) => {
     const p = item.Jogo?.preco ?? item.jogo?.preco ?? item.preco ?? 0;
@@ -105,45 +104,42 @@ export default function Carrinho({ setTelaAtual }) {
   const valorTotal = itens.reduce((acc, item) => acc + extrairPreco(item), 0);
 
   if (carregando) {
-    return <p style={{ color: '#94a3b8', textAlign: 'center', marginTop: '2rem' }}>Carregando seu carrinho...</p>;
+    return (
+      <div className="text-center py-5">
+        <div className="spinner-border text-primary mb-3" role="status">
+          <span className="visually-hidden">Carregando...</span>
+        </div>
+        <p className="text-secondary fs-5">Carregando seu carrinho...</p>
+      </div>
+    );
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div className="container py-4" style={{ maxWidth: '800px' }}>
       <Toast mensagem={toast.mensagem} tipo={toast.tipo} onClose={() => setToast({ mensagem: '', tipo: '' })} />
 
-      <h1 style={{ fontSize: '2rem', color: '#fff', marginBottom: '1.5rem' }}>🛒 Seu Carrinho</h1>
+      <h1 className="h2 text-white fw-bold mb-4 d-flex align-items-center gap-2">
+        🛒 Seu Carrinho
+      </h1>
 
       {itens.length === 0 ? (
-        <div style={{
-          backgroundColor: '#1e293b',
-          borderRadius: '12px',
-          padding: '3rem 1.5rem',
-          textAlign: 'center',
-          border: '1px solid #334155'
-        }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🛍️</div>
-          <h3 style={{ color: '#fff', margin: '0 0 0.5rem 0' }}>Seu carrinho está vazio</h3>
-          <p style={{ color: '#94a3b8', marginBottom: '1.5rem' }}>
+        <div className="card bg-dark text-white border-secondary text-center p-5 shadow-sm rounded-4">
+          <div className="display-3 mb-3">🛍️</div>
+          <h3 className="h4 text-white fw-bold mb-2">Seu carrinho está vazio</h3>
+          <p className="text-secondary mb-4">
             Explore o catálogo de jogos indies e adicione os seus favoritos!
           </p>
-          <button
-            onClick={() => setTelaAtual('loja')}
-            style={{
-              padding: '0.7rem 1.5rem',
-              borderRadius: '8px',
-              border: 'none',
-              backgroundColor: '#0070f3',
-              color: '#fff',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
-          >
-            Ir para a Loja
-          </button>
+          <div>
+            <button
+              onClick={() => setTelaAtual('loja')}
+              className="btn btn-primary px-4 py-2 fw-semibold rounded-3 shadow-sm"
+            >
+              Ir para a Loja
+            </button>
+          </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="d-flex flex-column gap-3">
           {itens.map((item, index) => {
             const titulo = extrairTitulo(item);
             const preco = extrairPreco(item);
@@ -152,51 +148,28 @@ export default function Carrinho({ setTelaAtual }) {
             return (
               <div
                 key={keyUnica}
-                style={{
-                  backgroundColor: '#1e293b',
-                  borderRadius: '10px',
-                  padding: '1rem 1.2rem',
-                  border: '1px solid #334155',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
+                className="card bg-dark text-white border-secondary p-3 shadow-sm rounded-3 d-flex flex-row justify-content-between align-items-center"
               >
                 <div>
-                  <h4 style={{ color: '#fff', margin: '0 0 0.3rem 0', fontSize: '1.1rem' }}>{titulo}</h4>
-                  <span style={{ color: '#a855f7', fontWeight: 'bold' }}>R$ {preco.toFixed(2)}</span>
+                  <h5 className="mb-1 fw-semibold text-white">{titulo}</h5>
+                  <span className="badge bg-purple text-light fs-6 fw-bold px-2 py-1" style={{ backgroundColor: '#8b5cf6' }}>
+                    R$ {preco.toFixed(2)}
+                  </span>
                 </div>
                 <button
-                    onClick={() => removerDoCarrinho(item)}
-                    style={{
-                        backgroundColor: 'transparent',
-                        border: '1px solid #ef4444',
-                        color: '#ef4444',
-                        padding: '0.4rem 0.8rem',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontWeight: 'bold'
-                    }}
-                    >
-                    Remover
+                  onClick={() => removerDoCarrinho(item)}
+                  className="btn btn-outline-danger btn-sm px-3 py-2 fw-semibold"
+                >
+                  Remover
                 </button>
               </div>
             );
           })}
 
-          <div style={{
-            backgroundColor: '#0f172a',
-            borderRadius: '10px',
-            padding: '1.2rem',
-            border: '1px solid #334155',
-            marginTop: '1rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
+          <div className="card bg-dark text-white border-secondary p-4 shadow-sm rounded-3 mt-2 d-flex flex-row justify-content-between align-items-center">
             <div>
-              <span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Total do Pedido:</span>
-              <div style={{ color: '#22c55e', fontSize: '1.6rem', fontWeight: 'bold' }}>
+              <span className="text-secondary fs-6 d-block mb-1">Total do Pedido:</span>
+              <div className="text-success fs-3 fw-bold">
                 R$ {valorTotal.toFixed(2)}
               </div>
             </div>
@@ -204,18 +177,18 @@ export default function Carrinho({ setTelaAtual }) {
             <button
               onClick={finalizarCompra}
               disabled={finalizando}
-              style={{
-                padding: '0.8rem 1.8rem',
-                borderRadius: '8px',
-                border: 'none',
-                backgroundColor: finalizando ? '#334155' : '#22c55e',
-                color: '#fff',
-                fontWeight: 'bold',
-                fontSize: '1rem',
-                cursor: finalizando ? 'not-allowed' : 'pointer'
-              }}
+              className={`btn btn-success btn-lg px-4 py-2 fw-bold d-flex align-items-center gap-2 ${finalizando ? 'disabled' : ''}`}
             >
-              {finalizando ? 'Processando...' : '💳 Finalizar Compra'}
+              {finalizando ? (
+                <>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  Processando...
+                </>
+              ) : (
+                <>
+                  💳 Finalizar Compra
+                </>
+              )}
             </button>
           </div>
         </div>

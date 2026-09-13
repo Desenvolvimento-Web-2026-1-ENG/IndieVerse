@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
-export default function Loja({ aoMudarAba }) {
+export default function Loja() {
   const [jogos, setJogos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState('todas');
@@ -31,7 +31,10 @@ export default function Loja({ aoMudarAba }) {
       setJogos(resJogos.data || []);
       setCategorias(resCat.data || []);
 
-      const idsAdquiridos = (resBib.data || []).map((lic) => lic.jogoId || lic.Jogo?.id);
+      const idsAdquiridos = (resBib.data || [])
+        .map((lic) => lic.jogoId || lic.Jogo?.id)
+        .filter((id) => id !== undefined);
+
       setBibliotecaIds(idsAdquiridos);
     } catch (error) {
       console.error('Erro ao carregar loja:', error);
@@ -52,11 +55,8 @@ export default function Loja({ aoMudarAba }) {
       } catch {
         res = await axios.get(`/api/v1/jogos/${jogo.id}/avaliacoes`);
       }
-
-      const lista = Array.isArray(res.data) ? res.data : [];
-      setAvaliacoes(lista);
+      setAvaliacoes(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
-      console.error('Nenhuma avaliação encontrada ou erro na rota:', error);
       setAvaliacoes([]);
     } finally {
       setCarregandoAvaliacoes(false);
@@ -65,14 +65,10 @@ export default function Loja({ aoMudarAba }) {
 
   const adicionarAoCarrinho = async (jogoId) => {
     try {
-      await axios.post('/api/v1/carrinho', {
-        jogadorId: usuario?.id,
-        jogoId: jogoId
-      });
+      await axios.post('/api/v1/carrinho', { jogadorId: usuario?.id, jogoId });
       setMensagem({ tipo: 'sucesso', texto: 'Jogo adicionado ao carrinho!' });
       setTimeout(() => setMensagem({ tipo: '', texto: '' }), 3000);
     } catch (error) {
-      console.error('Erro ao adicionar ao carrinho:', error);
       setMensagem({ tipo: 'erro', texto: 'Erro ao adicionar ou jogo já está no carrinho.' });
     }
   };
@@ -81,232 +77,148 @@ export default function Loja({ aoMudarAba }) {
     ? jogos
     : jogos.filter((j) => String(j.categoriaId || j.Categoria?.id) === String(categoriaSelecionada));
 
-  if (carregando) return <p style={{ color: '#fff', textAlign: 'center', marginTop: '2rem' }}>Carregando catálogo...</p>;
+  if (carregando) return <p className="text-center text-light my-5">Carregando catálogo...</p>;
 
   return (
-    <div style={{ backgroundColor: '#0b0c10', color: '#fff', minHeight: '100vh', paddingBottom: '3rem' }}>
-      <section style={{
-        position: 'relative',
-        overflow: 'hidden',
-        background: 'radial-gradient(circle at top left, #1f1235 0%, #0b0c10 70%)',
-        padding: '4rem 2rem',
-        borderBottom: '1px solid rgba(168, 85, 247, 0.15)',
-        marginBottom: '2.5rem'
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem', alignItems: 'center' }}>
-          <div>
-            <span style={{
-              display: 'inline-block',
-              padding: '0.3rem 0.8rem',
-              borderRadius: '20px',
-              fontSize: '0.75rem',
-              fontWeight: 'bold',
-              backgroundColor: 'rgba(168, 85, 247, 0.2)',
-              color: '#c084fc',
-              border: '1px solid rgba(168, 85, 247, 0.4)',
-              marginBottom: '1.2rem'
-            }}>
-              ❄️ NOVA TEMPORADA INDIE
-            </span>
-
-            <h1 style={{ fontSize: '2.8rem', fontWeight: '800', lineHeight: '1.1', margin: '0 0 1.2rem 0', color: '#fff' }}>
-              O universo dos <br />
-              <span style={{
-                background: 'linear-gradient(90deg, #c084fc 0%, #38bdf8 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
-              }}>
-                jogos independentes
-              </span> <br />
-              mora aqui.
-            </h1>
-
-            <p style={{ color: '#94a3b8', fontSize: '1rem', lineHeight: '1.6', marginBottom: '2rem', maxWidth: '500px' }}>
-              Milhares de jogos feitos por estúdios pequenos, artistas solo e mentes inquietas. Encontre seu próximo favorito.
-            </p>
-
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
-              <a
-                href="#destaques"
-                style={{
-                  padding: '0.8rem 1.6rem',
-                  borderRadius: '10px',
-                  background: 'linear-gradient(90deg, #6366f1 0%, #06b6d4 100%)',
-                  color: '#fff',
-                  fontWeight: 'bold',
-                  textDecoration: 'none',
-                  fontSize: '0.95rem',
-                  boxShadow: '0 4px 14px rgba(6, 182, 212, 0.3)'
-                }}
-              >
-                Explorar a loja &rarr;
-              </a>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.2rem' }}>
-              <div>
-                <h4 style={{ margin: 0, fontSize: '1.4rem', color: '#fff', fontWeight: 'bold' }}>12k+</h4>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>jogos indie</p>
+    <div className="pb-5">
+      <section className="hero-section py-5 px-3 mb-5">
+        <div className="container py-4">
+          <div className="row align-items-center g-4">
+            <div className="col-lg-7">
+              <span className="badge rounded-pill mb-3 px-3 py-2 fw-semibold" style={{ backgroundColor: 'rgba(139, 92, 246, 0.25)', color: '#c084fc', border: '1px solid #8b5cf6' }}>
+                ❄️ NOVA TEMPORADA INDIE
+              </span>
+              <h1 className="display-3 fw-bold text-white mb-3">
+                O universo dos <br />
+                <span className="text-gradient">jogos independentes</span> <br />
+                mora aqui.
+              </h1>
+              <p className="lead mb-4" style={{ maxWidth: '540px', color: '#cbd5e1' }}>
+                Milhares de jogos feitos por estúdios pequenos, artistas solo e mentes inquietas. Encontre seu próximo favorito — ou publique o seu.
+              </p>
+              <div className="d-flex flex-wrap gap-3 align-items-center">
+                <a 
+                  href="#destaques" 
+                  className="btn btn-lg fw-bold rounded-pill px-4 shadow text-decoration-none"
+                  style={{
+                    background: 'linear-gradient(90deg, #8b5cf6 0%, #3b82f6 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    boxShadow: '0 4px 15px rgba(139, 92, 246, 0.5)'
+                  }}
+                >
+                  Explorar a loja &rarr;
+                </a>
               </div>
-              <div>
-                <h4 style={{ margin: 0, fontSize: '1.4rem', color: '#fff', fontWeight: 'bold' }}>3.4k</h4>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>estúdios</p>
-              </div>
-              <div>
-                <h4 style={{ margin: 0, fontSize: '1.4rem', color: '#fff', fontWeight: 'bold' }}>98%</h4>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>satisfação</p>
+
+              <div className="row mt-5 pt-3 border-top border-secondary border-opacity-25 text-start">
+                <div className="col-auto me-4">
+                  <h4 className="fw-bold text-white m-0">12k+</h4>
+                  <small style={{ color: '#94a3b8' }}>jogos indie</small>
+                </div>
+                <div className="col-auto me-4">
+                  <h4 className="fw-bold text-white m-0">3.4k</h4>
+                  <small style={{ color: '#94a3b8' }}>estúdios</small>
+                </div>
+                <div className="col-auto">
+                  <h4 className="fw-bold text-white m-0">98%</h4>
+                  <small style={{ color: '#94a3b8' }}>satisfação</small>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{
-              width: '100%',
-              maxWidth: '420px',
-              height: '360px',
-              borderRadius: '16px',
-              background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(56, 189, 248, 0.1))',
-              border: '1px solid rgba(168, 85, 247, 0.3)',
-              padding: '8px',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
-              overflow: 'hidden',
-              position: 'relative'
-            }}>
+            <div className="col-lg-5 text-center">
               <img
                 src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80"
-                alt="Banner IndieVerse"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px', opacity: 0.85 }}
+                alt="Banner"
+                className="img-fluid rounded-4 shadow-lg border border-secondary border-opacity-25"
               />
             </div>
           </div>
         </div>
       </section>
 
-      <div id="destaques" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h2 style={{ fontSize: '1.8rem', margin: 0, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            🎮 Jogos em Destaque
-          </h2>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <label style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Filtrar por Categoria:</label>
+      <div id="destaques" className="container">
+        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+          <h2 className="h3 fw-bold text-white m-0">🎮 Jogos em Destaque</h2>
+          <div className="d-flex align-items-center gap-2">
+            <label className="small text-nowrap" style={{ color: '#cbd5e1' }}>Filtrar Categoria:</label>
             <select
               value={categoriaSelecionada}
               onChange={(e) => setCategoriaSelecionada(e.target.value)}
-              style={{
-                padding: '0.5rem 1rem',
-                borderRadius: '8px',
-                border: '1px solid #334155',
-                backgroundColor: '#1e293b',
-                color: '#fff',
-                fontWeight: 'bold',
-                cursor: 'pointer'
-              }}
+              className="form-select fw-semibold rounded-3"
+              style={{ backgroundColor: '#18122B', color: '#ffffff', borderColor: '#3b0764' }}
             >
-              <option value="todas">Todas as Categorias</option>
+              <option value="todas" style={{ backgroundColor: '#18122B', color: '#ffffff' }}>Todas as Categorias</option>
               {categorias.map((cat) => (
-                <option key={cat.id} value={cat.id}>{cat.nome}</option>
+                <option key={cat.id} value={cat.id} style={{ backgroundColor: '#18122B', color: '#ffffff' }}>{cat.nome}</option>
               ))}
             </select>
           </div>
         </div>
 
         {mensagem.texto && (
-          <div style={{
-            padding: '0.8rem',
-            marginBottom: '1rem',
-            borderRadius: '6px',
-            backgroundColor: mensagem.tipo === 'sucesso' ? '#22c55e' : '#ef4444',
-            color: '#fff',
-            fontWeight: 'bold'
-          }}>
+          <div className={`alert ${mensagem.tipo === 'sucesso' ? 'alert-success' : 'alert-danger'} fw-bold`}>
             {mensagem.texto}
           </div>
         )}
 
         {jogosFiltrados.length === 0 ? (
-          <p style={{ color: '#94a3b8', padding: '2rem 0' }}>Nenhum jogo encontrado para esta categoria.</p>
+          <p className="py-4" style={{ color: '#cbd5e1' }}>Nenhum jogo encontrado para esta categoria.</p>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.5rem' }}>
+          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             {jogosFiltrados.map((jogo) => {
               const jaPossui = bibliotecaIds.includes(jogo.id);
-
               return (
-                <div 
-                  key={jogo.id} 
-                  style={{
-                    backgroundColor: '#1e293b',
-                    borderRadius: '12px',
-                    padding: '1.2rem',
-                    border: '1px solid #334155',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justify: 'space-between',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    overflow: 'hidden'
-                  }}
-                >
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: '#38bdf8', textTransform: 'uppercase', fontWeight: 'bold' }}>
-                      {jogo.Categoria?.nome || 'Indie'}
-                    </span>
-                    <h3 style={{ 
-                      margin: '0.5rem 0', 
-                      color: '#f8fafc', 
-                      fontSize: '1.25rem',
-                      wordBreak: 'break-word',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical'
-                    }}>
-                      {jogo.titulo || jogo.nome}
-                    </h3>
-                    <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {jogo.descricao || 'Sem descrição disponível.'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#a855f7', marginBottom: '0.8rem' }}>
-                      R$ {Number(jogo.preco).toFixed(2)}
+                <div key={jogo.id} className="col">
+                  <div 
+                    className="h-100 p-3 rounded-4 d-flex flex-column justify-content-between shadow-lg"
+                    style={{
+                      backgroundColor: '#1e1b2e',
+                      border: '1px solid #7c3aed',
+                      color: '#ffffff'
+                    }}
+                  >
+                    <div>
+                      <small className="fw-bold text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.5px', color: '#38bdf8' }}>
+                        {jogo.Categoria?.nome || 'Indie'}
+                      </small>
+                      <h3 className="h5 text-white my-2 text-truncate">{jogo.titulo || jogo.nome}</h3>
+                      <p className="small text-truncate mb-3" style={{ color: '#cbd5e1' }}>
+                        {jogo.descricao || 'Sem descrição disponível.'}
+                      </p>
                     </div>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      <button
-                        onClick={() => abrirDetalhes(jogo)}
-                        style={{
-                          width: '100%',
-                          padding: '0.5rem',
-                          borderRadius: '8px',
-                          border: '1px solid #334155',
-                          backgroundColor: '#0f172a',
-                          color: '#38bdf8',
-                          fontWeight: 'bold',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        🔎 Ver Detalhes
-                      </button>
 
-                      <button
-                        onClick={() => !jaPossui && adicionarAoCarrinho(jogo.id)}
-                        disabled={jaPossui}
-                        style={{
-                          width: '100%',
-                          padding: '0.6rem',
-                          borderRadius: '8px',
-                          border: 'none',
-                          backgroundColor: jaPossui ? '#334155' : '#0070f3',
-                          color: jaPossui ? '#94a3b8' : '#fff',
-                          fontWeight: 'bold',
-                          cursor: jaPossui ? 'not-allowed' : 'pointer'
-                        }}
-                      >
-                        {jaPossui ? '✓ Já Adquirido' : '🛒 Adicionar ao Carrinho'}
-                      </button>
+                    <div>
+                      <div className="h5 text-white fw-bold mb-3">
+                        R$ {Number(jogo.preco).toFixed(2)}
+                      </div>
+
+                      <div className="d-grid gap-2">
+                        <button
+                          onClick={() => abrirDetalhes(jogo)}
+                          className="btn btn-sm fw-semibold rounded-3"
+                          style={{
+                            backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                            color: '#e9d5ff',
+                            border: '1px solid #8b5cf6'
+                          }}
+                        >
+                          🔎 Ver Detalhes
+                        </button>
+                        <button
+                          onClick={() => !jaPossui && adicionarAoCarrinho(jogo.id)}
+                          disabled={jaPossui}
+                          className="btn btn-sm fw-bold rounded-3"
+                          style={
+                            jaPossui
+                              ? { backgroundColor: '#334155', color: '#94a3b8', border: 'none' }
+                              : { background: 'linear-gradient(90deg, #8b5cf6 0%, #3b82f6 100%)', color: '#ffffff', border: 'none' }
+                          }
+                        >
+                          {jaPossui ? '✓ Já Adquirido' : '🛒 Adicionar ao Carrinho'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -317,129 +229,68 @@ export default function Loja({ aoMudarAba }) {
       </div>
 
       {jogoSelecionado && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          display: 'flex',
-          justify: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-          padding: '1rem'
-        }}>
-          <div style={{
-            backgroundColor: '#1e293b',
-            borderRadius: '12px',
-            padding: '2rem',
-            maxWidth: '600px',
-            width: '100%',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            border: '1px solid #334155',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-              <div>
-                <span style={{ fontSize: '0.8rem', color: '#38bdf8', textTransform: 'uppercase', fontWeight: 'bold' }}>
-                  {jogoSelecionado.Categoria?.nome || 'Indie'}
-                </span>
-                <h2 style={{ color: '#fff', margin: '0.2rem 0', wordBreak: 'break-word' }}>{jogoSelecionado.titulo || jogoSelecionado.nome}</h2>
-              </div>
-              <button 
-                onClick={() => setJogoSelecionado(null)}
-                style={{ backgroundColor: 'transparent', border: 'none', color: '#94a3b8', fontSize: '1.5rem', cursor: 'pointer' }}
-              >
-                ✕
-              </button>
-            </div>
-
-            <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.5', marginBottom: '1.5rem' }}>
-              {jogoSelecionado.descricao || 'Sem descrição informada.'}
-            </p>
-
-            <div style={{ backgroundColor: '#0f172a', padding: '1rem', borderRadius: '8px', border: '1px solid #334155', marginBottom: '1.5rem' }}>
-              <h4 style={{ color: '#38bdf8', marginTop: 0, marginBottom: '0.8rem', fontSize: '0.95rem' }}>
-                💻 Requisitos Mínimos do Sistema
-              </h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', fontSize: '0.85rem', color: '#94a3b8' }}>
-                <div><strong style={{ color: '#f8fafc' }}>SO:</strong> {jogoSelecionado.requisitosMinimos?.so || 'Windows 10'}</div>
-                <div><strong style={{ color: '#f8fafc' }}>Processador:</strong> {jogoSelecionado.requisitosMinimos?.processador || 'Intel Core i3'}</div>
-                <div><strong style={{ color: '#f8fafc' }}>Memória RAM:</strong> {jogoSelecionado.requisitosMinimos?.memoriaRam || '8 GB'}</div>
-                <div><strong style={{ color: '#f8fafc' }}>Placa de Vídeo:</strong> {jogoSelecionado.requisitosMinimos?.placaVideo || 'GTX 1050'}</div>
-                <div style={{ gridColumn: 'span 2' }}><strong style={{ color: '#f8fafc' }}>Armazenamento:</strong> {jogoSelecionado.requisitosMinimos?.armazenamento || '5 GB'}</div>
-              </div>
-            </div>
-
-            <div style={{ backgroundColor: '#0f172a', padding: '1rem', borderRadius: '8px', border: '1px solid #334155', marginBottom: '1.5rem' }}>
-              <h4 style={{ color: '#eab308', marginTop: 0, marginBottom: '0.8rem', fontSize: '0.95rem' }}>
-                ⭐ Avaliações dos Jogadores
-              </h4>
-
-              {carregandoAvaliacoes ? (
-                <p style={{ color: '#94a3b8', fontSize: '0.85rem', margin: 0 }}>Carregando avaliações...</p>
-              ) : avaliacoes.length === 0 ? (
-                <p style={{ color: '#94a3b8', fontSize: '0.85rem', margin: 0 }}>Nenhuma avaliação cadastrada ainda. Seja o primeiro a avaliar!</p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                  {avaliacoes.map((av, index) => (
-                    <div key={av.id || index} style={{ borderBottom: index < avaliacoes.length - 1 ? '1px solid #1e293b' : 'none', paddingBottom: '0.5rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
-                        <span style={{ color: '#f8fafc', fontSize: '0.85rem', fontWeight: 'bold' }}>
-                          {av.Jogador?.nome || av.usuario?.nome || 'Jogador'}
-                        </span>
-                        <span style={{ color: '#eab308', fontSize: '0.85rem' }}>
-                          {'⭐'.repeat(av.nota || 5)} ({av.nota}/5)
-                        </span>
-                      </div>
-                      <p style={{ color: '#cbd5e1', fontSize: '0.85rem', margin: 0, fontStyle: 'italic' }}>
-                        "{av.comentario}"
-                      </p>
-                    </div>
-                  ))}
+        <div className="modal d-block bg-dark bg-opacity-75" tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-content text-white rounded-4" style={{ backgroundColor: '#1e1b2e', border: '1px solid #7c3aed' }}>
+              <div className="modal-header border-secondary border-opacity-25">
+                <div>
+                  <small className="fw-bold text-uppercase" style={{ color: '#38bdf8' }}>{jogoSelecionado.Categoria?.nome || 'Indie'}</small>
+                  <h5 className="modal-title fw-bold text-white">{jogoSelecionado.titulo || jogoSelecionado.nome}</h5>
                 </div>
-              )}
-            </div>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setJogoSelecionado(null)}></button>
+              </div>
+              <div className="modal-body">
+                <p className="small" style={{ color: '#cbd5e1' }}>{jogoSelecionado.descricao || 'Sem descrição informada.'}</p>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#a855f7' }}>
-                R$ {Number(jogoSelecionado.preco).toFixed(2)}
-              </span>
+                <div className="p-3 rounded-3 mb-3" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <h6 className="fw-bold" style={{ color: '#38bdf8' }}>💻 Requisitos Mínimos</h6>
+                  <div className="row g-2 small" style={{ color: '#cbd5e1' }}>
+                    <div className="col-6"><strong>SO:</strong> {jogoSelecionado.requisitosMinimos?.so || 'Windows 10'}</div>
+                    <div className="col-6"><strong>RAM:</strong> {jogoSelecionado.requisitosMinimos?.memoriaRam || '8 GB'}</div>
+                    <div className="col-6"><strong>CPU:</strong> {jogoSelecionado.requisitosMinimos?.processador || 'Intel Core i3'}</div>
+                    <div className="col-6"><strong>GPU:</strong> {jogoSelecionado.requisitosMinimos?.placaVideo || 'GTX 1050'}</div>
+                  </div>
+                </div>
 
-              <div style={{ display: 'flex', gap: '0.8rem' }}>
-                <button
-                  onClick={() => setJogoSelecionado(null)}
-                  style={{
-                    padding: '0.6rem 1.2rem',
-                    borderRadius: '8px',
-                    border: '1px solid #334155',
-                    backgroundColor: '#0f172a',
-                    color: '#fff',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Fechar
-                </button>
-                <button
-                  onClick={() => {
-                    adicionarAoCarrinho(jogoSelecionado.id);
-                    setJogoSelecionado(null);
-                  }}
-                  disabled={bibliotecaIds.includes(jogoSelecionado.id)}
-                  style={{
-                    padding: '0.6rem 1.2rem',
-                    borderRadius: '8px',
-                    border: 'none',
-                    backgroundColor: bibliotecaIds.includes(jogoSelecionado.id) ? '#334155' : '#0070f3',
-                    color: bibliotecaIds.includes(jogoSelecionado.id) ? '#94a3b8' : '#fff',
-                    fontWeight: 'bold',
-                    cursor: bibliotecaIds.includes(jogoSelecionado.id) ? 'not-allowed' : 'pointer'
-                  }}
-                >
-                  {bibliotecaIds.includes(jogoSelecionado.id) ? 'Já Possui' : 'Adicionar ao Carrinho'}
-                </button>
+                <div className="p-3 rounded-3" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <h6 className="text-warning fw-bold">⭐ Avaliações</h6>
+                  {carregandoAvaliacoes ? (
+                    <p className="small m-0" style={{ color: '#94a3b8' }}>Carregando...</p>
+                  ) : avaliacoes.length === 0 ? (
+                    <p className="small m-0" style={{ color: '#94a3b8' }}>Nenhuma avaliação ainda.</p>
+                  ) : (
+                    avaliacoes.map((av, idx) => (
+                      <div key={idx} className="border-bottom border-secondary border-opacity-25 pb-2 mb-2">
+                        <div className="d-flex justify-content-between small">
+                          <strong>{av.Jogador?.nome || av.usuario?.nome || 'Jogador'}</strong>
+                          <span className="text-warning">{'⭐'.repeat(av.nota || 5)}</span>
+                        </div>
+                        <p className="small fst-italic m-0" style={{ color: '#cbd5e1' }}>"{av.comentario}"</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+              <div className="modal-footer border-secondary border-opacity-25 justify-content-between">
+                <span className="h4 text-white fw-bold m-0">R$ {Number(jogoSelecionado.preco).toFixed(2)}</span>
+                <div>
+                  <button className="btn btn-outline-light me-2 rounded-3" onClick={() => setJogoSelecionado(null)}>Fechar</button>
+                  <button
+                    className="btn fw-bold rounded-3"
+                    style={
+                      bibliotecaIds.includes(jogoSelecionado.id)
+                        ? { backgroundColor: '#334155', color: '#94a3b8', border: 'none' }
+                        : { background: 'linear-gradient(90deg, #8b5cf6 0%, #3b82f6 100%)', color: '#ffffff', border: 'none' }
+                    }
+                    disabled={bibliotecaIds.includes(jogoSelecionado.id)}
+                    onClick={() => {
+                      adicionarAoCarrinho(jogoSelecionado.id);
+                      setJogoSelecionado(null);
+                    }}
+                  >
+                    {bibliotecaIds.includes(jogoSelecionado.id) ? 'Já Possui' : 'Adicionar ao Carrinho'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

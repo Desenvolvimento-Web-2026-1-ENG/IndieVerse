@@ -49,168 +49,160 @@ export default function MeusJogos({ setTelaAtual }) {
     }
   };
 
-  if (carregando) return <p style={{ color: '#fff' }}>Carregando seus jogos...</p>;
+  if (carregando) {
+    return (
+      <div className="text-center py-5">
+        <div className="spinner-border text-primary mb-3" role="status">
+          <span className="visually-hidden">Carregando...</span>
+        </div>
+        <p className="text-secondary fs-5">Carregando seus jogos...</p>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '2rem', color: '#fff', margin: 0 }}>
-          🛠️ Meus Jogos Publicados
-        </h1>
+    <div className="container py-4" style={{ maxWidth: '1000px' }}>
+      <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4 pb-3 border-bottom border-secondary">
+        <div>
+          <h1 className="h2 text-white fw-bold mb-1 d-flex align-items-center gap-2">
+            🛠️ Meus Jogos Publicados
+          </h1>
+          <p className="text-secondary mb-0 small">
+            Gerencie seus jogos cadastrados e veja o feedback dos jogadores.
+          </p>
+        </div>
         <button
           onClick={() => setTelaAtual('cadastrar-jogo')}
-          style={{
-            padding: '0.6rem 1.2rem',
-            borderRadius: '8px',
-            border: 'none',
-            backgroundColor: '#a855f7',
-            color: '#fff',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}
+          className="btn btn-primary px-4 py-2 fw-bold rounded-3 shadow-sm text-nowrap align-self-start align-self-sm-auto"
+          style={{ backgroundColor: '#a855f7', borderColor: '#a855f7' }}
         >
           ➕ Publicar Novo Jogo
         </button>
       </div>
 
       {meusJogos.length === 0 ? (
-        <div style={{ backgroundColor: '#1e293b', padding: '2rem', borderRadius: '10px', textAlign: 'center' }}>
-          <p style={{ color: '#94a3b8', margin: 0 }}>
-            Você ainda não publicou nenhum jogo. Clique em "Publicar Novo Jogo" para começar!
+        <div className="card bg-dark text-white border-secondary text-center p-5 rounded-4 shadow-sm">
+          <div className="display-4 mb-3">🎮</div>
+          <p className="text-secondary mb-0 fs-5">
+            Você ainda não publicou nenhum jogo. Clique em <strong>"Publicar Novo Jogo"</strong> para começar!
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           {meusJogos.map((jogo) => (
-            <div
-              key={jogo.id}
-              style={{
-                backgroundColor: '#1e293b',
-                borderRadius: '12px',
-                padding: '1.2rem',
-                border: '1px solid #334155',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between'
-              }}
-            >
-              <div>
-                <span style={{ fontSize: '0.75rem', color: '#38bdf8', textTransform: 'uppercase', fontWeight: 'bold' }}>
-                  {jogo.Categoria?.nome || 'Indie'}
-                </span>
-                <h3 style={{ margin: '0.5rem 0', color: '#f8fafc', fontSize: '1.25rem' }}>{jogo.titulo}</h3>
-                <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                  {jogo.descricao || 'Sem descrição.'}
-                </p>
-              </div>
-
-              <div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#a855f7', marginBottom: '0.8rem' }}>
-                  R$ {Number(jogo.preco).toFixed(2)}
+            <div key={jogo.id} className="col">
+              <div className="card bg-dark text-white border-secondary h-100 rounded-3 shadow-sm d-flex flex-column justify-content-between p-3">
+                <div className="mb-3">
+                  <span className="badge bg-info text-dark fw-bold text-uppercase mb-2">
+                    {jogo.Categoria?.nome || 'Indie'}
+                  </span>
+                  <h3 className="h5 text-white fw-bold mb-2">{jogo.titulo}</h3>
+                  <p
+                    className="text-secondary small mb-0"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    {jogo.descricao || 'Sem descrição.'}
+                  </p>
                 </div>
 
-                <button
-                  onClick={() => verAvaliacoes(jogo)}
-                  style={{
-                    width: '100%',
-                    padding: '0.6rem',
-                    borderRadius: '8px',
-                    border: '1px solid #334155',
-                    backgroundColor: '#0f172a',
-                    color: '#eab308',
-                    fontWeight: 'bold',
-                    cursor: 'pointer'
-                  }}
-                >
-                  ⭐ Ver Avaliações Recebidas
-                </button>
+                <div>
+                  <div className="fs-5 fw-bold mb-3" style={{ color: '#a855f7' }}>
+                    R$ {Number(jogo.preco).toFixed(2)}
+                  </div>
+
+                  <button
+                    onClick={() => verAvaliacoes(jogo)}
+                    className="btn btn-outline-warning btn-sm w-100 py-2 fw-bold d-flex align-items-center justify-content-center gap-2"
+                  >
+                    <span>⭐</span> Ver Avaliações Recebidas
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
-
       {jogoSelecionado && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-          padding: '1rem'
-        }}>
-          <div style={{
-            backgroundColor: '#1e293b',
-            borderRadius: '12px',
-            padding: '2rem',
-            maxWidth: '550px',
-            width: '100%',
-            maxHeight: '80vh',
-            overflowY: 'auto',
-            border: '1px solid #334155'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3 style={{ color: '#fff', margin: 0 }}>⭐ Avaliações: {jogoSelecionado.titulo}</h3>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(15, 23, 42, 0.85)',
+            backdropFilter: 'blur(6px)',
+            display: 'grid',
+            placeItems: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+            boxSizing: 'border-box'
+          }}
+        >
+          <div
+            className="card bg-dark text-white border-secondary rounded-4 shadow-lg w-100"
+            style={{ maxWidth: '550px', maxHeight: '85vh', display: 'flex', flexDirection: 'column' }}
+          >
+            <div className="card-header border-secondary d-flex justify-content-between align-items-center p-3">
+              <h5 className="modal-title h5 text-white fw-bold m-0 d-flex align-items-center gap-2">
+                ⭐ Avaliações: <span className="text-warning">{jogoSelecionado.titulo}</span>
+              </h5>
               <button
+                type="button"
+                className="btn-close btn-close-white"
+                aria-label="Close"
                 onClick={() => setJogoSelecionado(null)}
-                style={{ backgroundColor: 'transparent', border: 'none', color: '#94a3b8', fontSize: '1.5rem', cursor: 'pointer' }}
-              >
-                ✕
-              </button>
+              ></button>
             </div>
 
-            {carregandoAvaliacoes ? (
-              <p style={{ color: '#94a3b8' }}>Carregando avaliações...</p>
-            ) : avaliacoes.length === 0 ? (
-              <p style={{ color: '#94a3b8' }}>Nenhuma avaliação recebida para este jogo ainda.</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {avaliacoes.map((av, index) => (
-                  <div
-                    key={av.id || index}
-                    style={{
-                      backgroundColor: '#0f172a',
-                      padding: '1rem',
-                      borderRadius: '8px',
-                      border: '1px solid #334155'
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                      <span style={{ color: '#f8fafc', fontWeight: 'bold', fontSize: '0.9rem' }}>
-                        {av.Jogador?.nome || av.usuario?.nome || 'Jogador'}
-                      </span>
-                      <span style={{ color: '#eab308', fontSize: '0.9rem' }}>
-                        {'⭐'.repeat(av.nota || 5)} ({av.nota}/5)
-                      </span>
+            <div className="card-body overflow-auto p-4" style={{ flex: 1 }}>
+              {carregandoAvaliacoes ? (
+                <div className="text-center py-4">
+                  <div className="spinner-border spinner-border-sm text-warning mb-2" role="status"></div>
+                  <p className="text-secondary small mb-0">Carregando avaliações...</p>
+                </div>
+              ) : avaliacoes.length === 0 ? (
+                <p className="text-secondary text-center my-3">
+                  Nenhuma avaliação recebida para este jogo ainda.
+                </p>
+              ) : (
+                <div className="d-flex flex-column gap-3">
+                  {avaliacoes.map((av, index) => (
+                    <div
+                      key={av.id || index}
+                      className="p-3 rounded-3 border border-secondary"
+                      style={{ backgroundColor: '#0f172a' }}
+                    >
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <span className="fw-bold text-light small">
+                          {av.Jogador?.nome || av.usuario?.nome || 'Jogador'}
+                        </span>
+                        <span className="text-warning small fw-semibold">
+                          {'⭐'.repeat(av.nota || 5)} ({av.nota}/5)
+                        </span>
+                      </div>
+                      <p className="text-secondary small mb-0 italic">
+                        "{av.comentario}"
+                      </p>
                     </div>
-                    <p style={{ color: '#cbd5e1', fontSize: '0.88rem', margin: 0, fontStyle: 'italic' }}>
-                      "{av.comentario}"
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
 
-            <button
-              onClick={() => setJogoSelecionado(null)}
-              style={{
-                marginTop: '1.5rem',
-                width: '100%',
-                padding: '0.6rem',
-                borderRadius: '8px',
-                border: '1px solid #334155',
-                backgroundColor: '#0f172a',
-                color: '#fff',
-                cursor: 'pointer'
-              }}
-            >
-              Fechar
-            </button>
+            <div className="card-footer border-secondary p-3 text-end">
+              <button
+                onClick={() => setJogoSelecionado(null)}
+                className="btn btn-secondary w-100 fw-semibold"
+              >
+                Fechar
+              </button>
+            </div>
           </div>
         </div>
       )}

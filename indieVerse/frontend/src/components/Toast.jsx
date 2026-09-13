@@ -15,39 +15,30 @@ export default function Toast({ mensagem, tipo, onClose }) {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        backgroundColor: ehSucesso ? '#16a34a' : '#dc2626',
-        color: '#fff',
-        padding: '0.8rem 1.4rem',
-        borderRadius: '8px',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.4)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.8rem',
-        zIndex: 2000,
-        fontWeight: 'bold',
-        fontSize: '0.9rem',
-        animation: 'fadeIn 0.3s ease-in-out'
-      }}
+      className="position-fixed bottom-0 end-0 p-3"
+      style={{ zIndex: 1100 }}
     >
-      <span>{ehSucesso ? '✅' : '⚠️'}</span>
-      <span>{mensagem}</span>
-      <button
-        onClick={onClose}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          color: '#fff',
-          cursor: 'pointer',
-          marginLeft: '0.5rem',
-          fontSize: '1rem'
-        }}
+      <div
+        className={`toast show align-items-center text-white border-0 shadow-lg ${
+          ehSucesso ? 'bg-success' : 'bg-danger'
+        }`}
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
       >
-        ✕
-      </button>
+        <div className="d-flex p-2">
+          <div className="toast-body d-flex align-items-center gap-2 fw-semibold">
+            <span>{ehSucesso ? '✅' : '⚠️'}</span>
+            <span>{mensagem}</span>
+          </div>
+          <button
+            type="button"
+            className="btn-close btn-close-white me-2 m-auto"
+            aria-label="Close"
+            onClick={onClose}
+          ></button>
+        </div>
+      </div>
     </div>
   );
 }
