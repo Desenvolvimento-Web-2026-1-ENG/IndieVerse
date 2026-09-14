@@ -1,53 +1,17 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useMeusJogos } from '../hooks/useMeusJogos';
 
 export default function MeusJogos({ setTelaAtual }) {
   const { usuario } = useAuth();
-  const [meusJogos, setMeusJogos] = useState([]);
-  const [carregando, setCarregando] = useState(true);
-  const [jogoSelecionado, setJogoSelecionado] = useState(null);
-  const [avaliacoes, setAvaliacoes] = useState([]);
-  const [carregandoAvaliacoes, setCarregandoAvaliacoes] = useState(false);
-
-  useEffect(() => {
-    carregarMeusJogos();
-  }, [usuario]);
-
-  const carregarMeusJogos = async () => {
-    try {
-      setCarregando(true);
-      const res = await axios.get('/api/v1/jogos');
-      const todosJogos = res.data || [];
-      const filtrados = todosJogos.filter((j) => String(j.desenvolvedorId) === String(usuario.id));
-      setMeusJogos(filtrados);
-    } catch (error) {
-      console.error('Erro ao carregar meus jogos:', error);
-    } finally {
-      setCarregando(false);
-    }
-  };
-
-  const verAvaliacoes = async (jogo) => {
-    setJogoSelecionado(jogo);
-    setCarregandoAvaliacoes(true);
-    setAvaliacoes([]);
-
-    try {
-      let res;
-      try {
-        res = await axios.get(`/api/v1/avaliacoes/jogo/${jogo.id}`);
-      } catch {
-        res = await axios.get(`/api/v1/jogos/${jogo.id}/avaliacoes`);
-      }
-      setAvaliacoes(Array.isArray(res.data) ? res.data : []);
-    } catch (error) {
-      console.error('Erro ao buscar avaliações:', error);
-      setAvaliacoes([]);
-    } finally {
-      setCarregandoAvaliacoes(false);
-    }
-  };
+  const {
+    meusJogos,
+    carregando,
+    jogoSelecionado,
+    avaliacoes,
+    carregandoAvaliacoes,
+    verAvaliacoes,
+    fecharModalAvaliacoes
+  } = useMeusJogos(usuario);
 
   if (carregando) {
     return (
@@ -127,6 +91,7 @@ export default function MeusJogos({ setTelaAtual }) {
           ))}
         </div>
       )}
+
       {jogoSelecionado && (
         <div
           style={{
@@ -156,7 +121,7 @@ export default function MeusJogos({ setTelaAtual }) {
                 type="button"
                 className="btn-close btn-close-white"
                 aria-label="Close"
-                onClick={() => setJogoSelecionado(null)}
+                onClick={fecharModalAvaliacoes}
               ></button>
             </div>
 
@@ -197,7 +162,7 @@ export default function MeusJogos({ setTelaAtual }) {
 
             <div className="card-footer border-secondary p-3 text-end">
               <button
-                onClick={() => setJogoSelecionado(null)}
+                onClick={fecharModalAvaliacoes}
                 className="btn btn-secondary w-100 fw-semibold"
               >
                 Fechar

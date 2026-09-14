@@ -1,74 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import api from '../services/api';
+import React from 'react';
+import { useCategorias } from '../hooks/useCategorias';
 
 export default function Categorias() {
-  const [categorias, setCategorias] = useState([]);
-  const [nome, setNome] = useState('');
-  const [editandoId, setEditandoId] = useState(null);
-  const [carregando, setCarregando] = useState(true);
-  const [salvando, setSalvando] = useState(false);
-
-  const carregarCategorias = async () => {
-    try {
-      setCarregando(true);
-      const res = await api.get('/categorias');
-      setCategorias(res.data || []);
-    } catch (err) {
-      console.error('Erro ao buscar categorias', err);
-    } finally {
-      setCarregando(false);
-    }
-  };
-
-  useEffect(() => {
-    carregarCategorias();
-  }, []);
-
-  const salvar = async (e) => {
-    e.preventDefault();
-    if (!nome.trim()) return;
-
-    try {
-      setSalvando(true);
-      if (editandoId) {
-        await api.put(`/categorias/${editandoId}`, { nome });
-      } else {
-        await api.post('/categorias', { nome });
-      }
-      setNome('');
-      setEditandoId(null);
-      carregarCategorias();
-    } catch (err) {
-      alert('Erro ao salvar categoria');
-    } finally {
-      setSalvando(false);
-    }
-  };
-
-  const editar = (cat) => {
-    setEditandoId(cat.id);
-    setNome(cat.nome);
-  };
-
-  const cancelarEdicao = () => {
-    setEditandoId(null);
-    setNome('');
-  };
-
-  const deletar = async (id) => {
-    if (confirm('Deseja excluir esta categoria?')) {
-      try {
-        await api.delete(`/categorias/${id}`);
-        carregarCategorias();
-      } catch (err) {
-        alert('Erro ao excluir categoria');
-      }
-    }
-  };
+  const {
+    categorias,
+    nome,
+    editandoId,
+    carregando,
+    salvando,
+    setNome,
+    salvar,
+    editar,
+    cancelarEdicao,
+    deletar
+  } = useCategorias();
 
   return (
     <div className="container py-4" style={{ maxWidth: '800px' }}>
-
       <h2 className="h3 text-white fw-bold mb-4 d-flex align-items-center gap-2">
         🏷️ Gerenciar Categorias
       </h2>
@@ -77,7 +25,7 @@ export default function Categorias() {
         <h5 className="h6 text-secondary text-uppercase fw-bold mb-3">
           {editandoId ? '✏️ Editar Categoria' : '➕ Cadastrar Nova Categoria'}
         </h5>
-        
+
         <form onSubmit={salvar}>
           <div className="row g-2 align-items-center">
             <div className="col">

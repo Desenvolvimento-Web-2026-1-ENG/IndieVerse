@@ -1,25 +1,45 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
+import { usuarioService } from '../services/usuarioService';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  // Define o tipo de usuário ('jogador' ou 'desenvolvedor')
-  const [usuario, setUsuario] = useState({
-    tipo: 'jogador', // Padrão
-    id: 1,           // ID fictício para usar nos endpoints de carrinho/biblioteca
-    nome: 'Pedro Henrique'
+  const [usuario, setUsuario] = useState(() => {
+    const usuarioSalvo = localStorage.getItem('@indieverse:usuario');
+    return usuarioSalvo ? JSON.parse(usuarioSalvo) : null; 
   });
 
-  const alternarPerfil = (novoTipo) => {
-    setUsuario({
-      tipo: novoTipo,
-      id: 1,
-      nome: novoTipo === 'jogador' ? 'Pedro Henrique (Jogador)' : 'Aurea Studios (Dev)'
-    });
+  useEffect(() => {
+    if (usuario) {
+      localStorage.setItem('@indieverse:usuario', JSON.stringify(usuario));
+    } else {
+      localStorage.removeItem('@indieverse:usuario');
+    }
+  }, [usuario]);
+
+  const login = (dadosUsuario) => {
+    setUsuario(dadosUsuario);
+  };
+
+  const logout = () => {
+    setUsuario(null);
+    localStorage.removeItem('@indieverse:usuario');
+  };
+
+  const excluirPerfilAtual = async () => {
+    if (!usuario?.id) return;
+
+    if (usuario.tipo === 'jogador') {
+      await usuarioService.deletarJogador(usuario.id);
+    } else {
+      await usuarioService.deletarDesenvolvedor(usuario.id);
+    }
+
+    logout();
   };
 
   return (
-    <AuthContext.Provider value={{ usuario, alternarPerfil }}>
+    <AuthContext.Provider value={{ usuario, login, logout, excluirPerfilAtual }}>
       {children}
     </AuthContext.Provider>
   );

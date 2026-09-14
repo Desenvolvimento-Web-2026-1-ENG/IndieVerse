@@ -1,79 +1,16 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useCadastrarJogo } from '../hooks/useCadastrarJogo';
 
 export default function CadastrarJogo({ setTelaAtual }) {
   const { usuario } = useAuth();
-  const [categorias, setCategorias] = useState([]);
-  const [mensagem, setMensagem] = useState({ tipo: '', texto: '' });
-  const [salvando, setSalvando] = useState(false);
-  
-  const [formData, setFormData] = useState({
-    titulo: '',
-    descricao: '',
-    preco: '',
-    categoriaId: '',
-    so: 'Windows 10',
-    processador: 'Intel Core i3',
-    memoriaRam: '8GB',
-    placaVideo: 'GTX 1050',
-    armazenamento: '5GB'
-  });
-
-  useEffect(() => {
-    buscarCategorias();
-  }, []);
-
-  const buscarCategorias = async () => {
-    try {
-      const response = await axios.get('/api/v1/categorias');
-      setCategorias(response.data);
-      if (response.data.length > 0) {
-        setFormData((prev) => ({ ...prev, categoriaId: response.data[0].id }));
-      }
-    } catch (error) {
-      console.error('Erro ao carregar categorias:', error);
-    }
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSalvando(true);
-    setMensagem({ tipo: '', texto: '' });
-
-    try {
-      const payload = {
-        titulo: formData.titulo,
-        descricao: formData.descricao,
-        preco: parseFloat(formData.preco),
-        desenvolvedorId: usuario.id,
-        categoriaId: parseInt(formData.categoriaId),
-        requisitosMinimos: {
-          so: formData.so,
-          processador: formData.processador,
-          memoriaRam: formData.memoriaRam,
-          placaVideo: formData.placaVideo,
-          armazenamento: formData.armazenamento
-        }
-      };
-
-      await axios.post('/api/v1/jogos', payload);
-      setMensagem({ tipo: 'sucesso', texto: 'Jogo publicado com sucesso!' });
-      
-      setTimeout(() => {
-        setTelaAtual('meus-jogos');
-      }, 1500);
-    } catch (error) {
-      console.error('Erro ao cadastrar jogo:', error);
-      setMensagem({ tipo: 'erro', texto: 'Erro ao cadastrar o jogo. Verifique os dados.' });
-    } finally {
-      setSalvando(false);
-    }
-  };
+  const {
+    categorias,
+    formData,
+    mensagem,
+    salvando,
+    handleChange,
+    handleSubmit
+  } = useCadastrarJogo(usuario, setTelaAtual);
 
   return (
     <div className="container py-4" style={{ maxWidth: '650px' }}>

@@ -1,95 +1,25 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useBiblioteca } from '../hooks/useBiblioteca';
 
 export default function Biblioteca() {
   const { usuario } = useAuth();
-  const [licencas, setLicencas] = useState([]);
-  const [carregando, setCarregando] = useState(true);
-  const [jogoParaAvaliar, setJogoParaAvaliar] = useState(null);
-  const [nota, setNota] = useState(5);
-  const [comentario, setComentario] = useState('');
-  const [mensagem, setMensagem] = useState({ tipo: '', texto: '' });
-
-  useEffect(() => {
-    carregarBiblioteca();
-  }, [usuario]);
-
-  const carregarBiblioteca = async () => {
-    try {
-      setCarregando(true);
-      const [resBib, resJogos] = await Promise.all([
-        axios.get(`/api/v1/biblioteca/${usuario.id}`).catch(() => ({ data: [] })),
-        axios.get('/api/v1/jogos').catch(() => ({ data: [] }))
-      ]);
-
-      const listaJogos = resJogos.data || [];
-      const listaLicencas = resBib.data || [];
-
-      const licencasFormatadas = listaLicencas.map((lic) => {
-        const idDoJogo = lic.jogoId || lic.JogoId || lic.Jogo?.id || lic.jogo?.id;
-        const jogoEncontrado = listaJogos.find((j) => String(j.id) === String(idDoJogo));
-
-        return {
-          ...lic,
-          dadosJogo: jogoEncontrado || lic.Jogo || lic.jogo || { id: idDoJogo, titulo: `Jogo #${idDoJogo}` }
-        };
-      });
-
-      setLicencas(licencasFormatadas);
-    } catch (error) {
-      console.error('Erro ao carregar biblioteca:', error);
-    } finally {
-      setCarregando(false);
-    }
-  };
-
-  const enviarAvaliacao = async (e) => {
-    e.preventDefault();
-    try {
-      const payload = {
-        jogadorId: usuario.id,
-        usuarioId: usuario.id,
-        jogoId: jogoParaAvaliar.id,
-        nota: Number(nota),
-        comentario
-      };
-
-      await axios.post('/api/v1/avaliacoes', payload);
-
-      setMensagem({ tipo: 'sucesso', texto: '🎉 Avaliação enviada com sucesso!' });
-      setJogoParaAvaliar(null);
-      setComentario('');
-      setNota(5);
-      setTimeout(() => setMensagem({ tipo: '', texto: '' }), 4000);
-    } catch (error) {
-      console.error('Erro ao enviar avaliação:', error);
-      
-      if (error.response?.status === 403) {
-        setMensagem({ 
-          tipo: 'erro', 
-          texto: 'Erro 403: Alterne seu perfil para Jogador no topo da página para enviar a avaliação.' 
-        });
-      } else {
-        setMensagem({ tipo: 'erro', texto: 'Erro ao enviar avaliação. Verifique a conexão com o servidor.' });
-      }
-    }
-  };
+  const {
+    licencas,
+    carregando,
+    jogoParaAvaliar,
+    setJogoParaAvaliar,
+    nota,
+    setNota,
+    comentario,
+    setComentario,
+    mensagem,
+    enviarAvaliacao
+  } = useBiblioteca(usuario);
 
   if (carregando) {
     return (
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '3rem 1.5rem',
-        textAlign: 'center',
-        color: '#94a3b8'
-      }}>
-        <div style={{
-          fontSize: '2rem',
-          marginBottom: '1rem',
-          animation: 'pulse 1.5s infinite ease-in-out'
-        }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '3rem 1.5rem', textAlign: 'center', color: '#94a3b8' }}>
+        <div style={{ fontSize: '2rem', marginBottom: '1rem', animation: 'pulse 1.5s infinite ease-in-out' }}>
           🎮
         </div>
         <p style={{ fontSize: '1.1rem' }}>Carregando sua biblioteca de jogos...</p>
@@ -105,6 +35,7 @@ export default function Biblioteca() {
       color: '#f8fafc',
       fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
+
       <div style={{
         display: 'flex',
         alignItems: 'center',
