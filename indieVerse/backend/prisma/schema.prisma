@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Categoria {
+  id    String @id @default(uuid())
+  nome  String
+  jogos Jogo[]
+}
+
+model Jogador {
+  id          String      @id @default(uuid())
+  nome        String
+  email       String      @unique
+  senha       String
+  carrinhos   Carrinho[]
+  licencas    Licenca[]
+  avaliacoes  Avaliacao[]
+}
+
+model Desenvolvedor {
+  id         String @id @default(uuid())
+  nome       String
+  email      String @unique
+  senha      String
+  estudio    String
+  jogos      Jogo[]
+}
+
+model Jogo {
+  id                String        @id @default(uuid())
+  titulo            String
+  descricao         String
+  preco             Float
+  requisitosMinimos String?       
+  categoriaId       String
+  categoria         Categoria     @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+  desenvolvedorId   String
+  desenvolvedor     Desenvolvedor @relation(fields: [desenvolvedorId], references: [id], onDelete: Cascade)
+  carrinhos         Carrinho[]
+  licencas          Licenca[]
+  avaliacoes        Avaliacao[]
+}
+
+model Carrinho {
+  id        String  @id @default(uuid())
+  jogadorId String
+  jogador   Jogador @relation(fields: [jogadorId], references: [id], onDelete: Cascade)
+  jogoId    String
+  jogo      Jogo    @relation(fields: [jogoId], references: [id], onDelete: Cascade)
+}
+
+model Licenca {
+  id        String   @id @default(uuid())
+  jogadorId String
+  jogador   Jogador  @relation(fields: [jogadorId], references: [id], onDelete: Cascade)
+  jogoId    String
+  jogo      Jogo     @relation(fields: [jogoId], references: [id], onDelete: Cascade)
+  data      DateTime @default(now())
+}
+
+model Avaliacao {
+  id         String   @id @default(uuid())
+  nota       Int
+  comentario String
+  jogadorId  String
+  jogador    Jogador  @relation(fields: [jogadorId], references: [id], onDelete: Cascade)
+  jogoId     String
+  jogo       Jogo     @relation(fields: [jogoId], references: [id], onDelete: Cascade)
+}

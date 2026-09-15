@@ -1,9 +1,9 @@
 import { Categoria } from "@entities/Categoria";
 
 export interface ICategoriaRepository {
-  listarTodas(): Categoria[];
-  buscarPorId(id: number): Categoria | undefined;
-  criar(dados: Omit<Categoria, "id">): Categoria;
-  atualizar(id: number, dados: Partial<Categoria>): Categoria | undefined;
-  excluir(id: number): boolean;
+  listarTodas(): Promise<any[]>;
+  buscarPorId(id: any): Promise<any | null>;
+  criar(dados: { nome: string }): Promise<any>;
+  atualizar(id: any, dados: { nome?: string }): Promise<any | null>;
+  excluir(id: any): Promise<boolean>;
 }

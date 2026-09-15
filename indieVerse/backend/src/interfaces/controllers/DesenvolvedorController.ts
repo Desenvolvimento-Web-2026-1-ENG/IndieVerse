@@ -4,41 +4,41 @@ import { DesenvolvedorService } from "../../services/DesenvolvedorService";
 export class DesenvolvedorController {
   constructor(private devService: DesenvolvedorService) {}
 
-  listarTodos = (req: Request, res: Response): Response => {
-    const devs = this.devService.listarTodos();
+  listarTodos = async (req: Request, res: Response): Promise<Response> => {
+    const devs = await this.devService.listarTodos();
     return res.status(200).json(devs);
   };
 
-  buscarPorId = (req: Request, res: Response): Response => {
+  buscarPorId = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const dev = this.devService.buscarPorId(Number(req.params.id));
+      const dev = await this.devService.buscarPorId(req.params.id);
       return res.status(200).json(dev);
     } catch (error: any) {
       return res.status(404).json({ mensagem: error.message });
     }
   };
 
-  criar = (req: Request, res: Response): Response => {
+  criar = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const dev = this.devService.criar(req.body);
+      const dev = await this.devService.criar(req.body);
       return res.status(201).json(dev);
     } catch (error: any) {
       return res.status(400).json({ mensagem: error.message });
     }
   };
 
-  atualizar = (req: Request, res: Response): Response => {
+  atualizar = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const dev = this.devService.atualizar(Number(req.params.id), req.body);
+      const dev = await this.devService.atualizar(req.params.id, req.body);
       return res.status(200).json(dev);
     } catch (error: any) {
       return res.status(404).json({ mensagem: error.message });
     }
   };
 
-  deletar = (req: Request, res: Response): Response => {
+  deletar = async (req: Request, res: Response): Promise<Response> => {
     try {
-      this.devService.deletar(Number(req.params.id));
+      await this.devService.deletar(req.params.id);
       return res.status(204).send();
     } catch (error: any) {
       return res.status(404).json({ mensagem: error.message });

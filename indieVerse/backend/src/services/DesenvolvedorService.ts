@@ -15,35 +15,35 @@ export interface AtualizarDesenvolvedorDTO {
 export class DesenvolvedorService {
   constructor(private devRepository: any) {}
 
-  listarTodos(): Desenvolvedor[] {
-    return this.devRepository.listarTodos();
+  async listarTodos(): Promise<Desenvolvedor[]> {
+    return await this.devRepository.listarTodos();
   }
 
-  buscarPorId(id: number): Desenvolvedor {
-    const dev = this.devRepository.buscarPorId(id);
+  async buscarPorId(id: any): Promise<Desenvolvedor> {
+    const dev = await this.devRepository.buscarPorId(id);
     if (!dev) {
       throw new Error("Desenvolvedor não encontrado.");
     }
     return dev;
   }
 
-  criar(dados: CriarDesenvolvedorDTO): Desenvolvedor {
+  async criar(dados: CriarDesenvolvedorDTO): Promise<Desenvolvedor> {
     if (!dados.nomeEstudio || !dados.email) {
       throw new Error("Nome do Estúdio e Email são obrigatórios.");
     }
-    return this.devRepository.criar(dados);
+    return await this.devRepository.criar(dados);
   }
 
-  atualizar(id: number, dados: AtualizarDesenvolvedorDTO): Desenvolvedor {
-    const dev = this.devRepository.atualizar(id, dados);
+  async atualizar(id: any, dados: AtualizarDesenvolvedorDTO): Promise<Desenvolvedor> {
+    const dev = await this.devRepository.atualizar(id, dados);
     if (!dev) {
       throw new Error("Desenvolvedor não encontrado.");
     }
     return dev;
   }
 
-  deletar(id: number): void {
-    const deletado = this.devRepository.deletar(id);
+  async deletar(id: any): Promise<void> {
+    const deletado = await this.devRepository.deletar(id);
     if (!deletado) {
       throw new Error("Desenvolvedor não encontrado.");
     }

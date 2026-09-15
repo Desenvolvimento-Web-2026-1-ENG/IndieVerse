@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { CategoriaController } from "../../../interfaces/controllers/CategoriaController";
 import { CategoriaService } from "../../../services/CategoriaService";
-import { CategoriaRepositoryInMemory } from "@infrastructure/database/CategoriaRepositoryInMemory";
+import { CategoriaRepositoryPrisma } from "@infrastructure/database/CategoriaRepositoryPrisma";
 
 const router = Router();
 
-const categoriaRepository = new CategoriaRepositoryInMemory();
+const categoriaRepository = new CategoriaRepositoryPrisma();
 const categoriaService = new CategoriaService(categoriaRepository);
 const categoriaController = new CategoriaController(categoriaService);
 
@@ -51,7 +51,7 @@ router.post("/categorias", (req, res) => categoriaController.criar(req, res));
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
  *         description: Categoria encontrada
@@ -65,7 +65,7 @@ router.post("/categorias", (req, res) => categoriaController.criar(req, res));
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -89,7 +89,7 @@ router.post("/categorias", (req, res) => categoriaController.criar(req, res));
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       204:
  *         description: Categoria deletada com sucesso

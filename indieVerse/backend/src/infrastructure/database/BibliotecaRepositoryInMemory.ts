@@ -4,7 +4,7 @@ import { IBibliotecaRepository } from "@repositories/IBibliotecaRepository";
 let licencas: Licenca[] = [];
 let proximoId = 1;
 
-export class BibliotecaRepositoryInMemory implements IBibliotecaRepository {
+/*export class BibliotecaRepositoryInMemory implements IBibliotecaRepository {
   adicionarLicenca(jogadorId: number, jogoId: number): Licenca {
     const novaLicenca: Licenca = {
       id: proximoId++,
@@ -23,4 +23,4 @@ export class BibliotecaRepositoryInMemory implements IBibliotecaRepository {
   possuiLicenca(jogadorId: number, jogoId: number): boolean {
     return licencas.some((l) => l.jogadorId === jogadorId && l.jogoId === jogoId);
   }
-}
+}*/

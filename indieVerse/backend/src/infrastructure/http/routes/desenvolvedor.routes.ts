@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { DesenvolvedorController } from "../../../interfaces/controllers/DesenvolvedorController";
 import { DesenvolvedorService } from "../../../services/DesenvolvedorService";
-import { DesenvolvedorRepositoryInMemory } from "@infrastructure/database/DesenvolvedorRepositoryInMemory";
+import { DesenvolvedorRepositoryPrisma } from "@infrastructure/database/DesenvolvedorRepositoryPrisma";
 
 const router = Router();
 
-const devRepository = new DesenvolvedorRepositoryInMemory();
+const devRepository = new DesenvolvedorRepositoryPrisma();
 const devService = new DesenvolvedorService(devRepository);
 const devController = new DesenvolvedorController(devService);
 

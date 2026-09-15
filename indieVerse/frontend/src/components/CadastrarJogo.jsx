@@ -87,10 +87,12 @@ export default function CadastrarJogo({ setTelaAtual }) {
               <label className="form-label text-light fw-semibold small">Categoria</label>
               <select
                 name="categoriaId"
+                required
                 className="form-select bg-dark text-white border-secondary"
                 value={formData.categoriaId}
                 onChange={handleChange}
               >
+                <option value="">Selecione uma categoria...</option>
                 {categorias.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.nome}

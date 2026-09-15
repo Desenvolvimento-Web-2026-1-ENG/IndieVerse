@@ -4,9 +4,9 @@ import { LojaService } from "../../services/LojaService";
 export class LojaController {
   constructor(private lojaService: LojaService) {}
 
-  adicionarAoCarrinho = (req: Request, res: Response): Response => {
+  adicionarAoCarrinho = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const carrinho = this.lojaService.adicionarItemCarrinho(req.body);
+      const carrinho = await this.lojaService.adicionarItemCarrinho(req.body);
       return res.status(201).json({
         mensagem: "Item adicionado ao carrinho com sucesso.",
         carrinho,
@@ -16,27 +16,26 @@ export class LojaController {
     }
   };
 
-  obterCarrinho = (req: Request, res: Response): Response => {
-    const jogadorId = Number(req.params.jogadorId);
-    const carrinho = this.lojaService.obterCarrinho(jogadorId);
+  obterCarrinho = async (req: Request, res: Response): Promise<Response> => {
+    const { jogadorId } = req.params;
+    const carrinho = await this.lojaService.obterCarrinho(jogadorId);
     return res.status(200).json(carrinho);
   };
 
-  removerDoCarrinho = (req: Request, res: Response): Response => {
+  removerDoCarrinho = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const jogadorId = Number(req.params.jogadorId);
-      const jogoId = Number(req.params.jogoId);
-      this.lojaService.removerItemCarrinho(jogadorId, jogoId);
+      const { jogadorId, jogoId } = req.params;
+      await this.lojaService.removerItemCarrinho(jogadorId, jogoId);
       return res.status(204).send();
     } catch (error: any) {
       return res.status(404).json({ mensagem: error.message });
     }
   };
 
-  realizarCheckout = (req: Request, res: Response): Response => {
+  realizarCheckout = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const jogadorId = Number(req.params.jogadorId);
-      const resultado = this.lojaService.realizarCheckout(jogadorId);
+      const { jogadorId } = req.params;
+      const resultado = await this.lojaService.realizarCheckout(jogadorId);
       return res.status(200).json({
         mensagem: "Checkout realizado com sucesso! Carrinho finalizado e zerado.",
         ...resultado,
@@ -46,15 +45,15 @@ export class LojaController {
     }
   };
 
-  obterBiblioteca = (req: Request, res: Response): Response => {
-    const jogadorId = Number(req.params.jogadorId);
-    const licencas = this.lojaService.obterBiblioteca(jogadorId);
+  obterBiblioteca = async (req: Request, res: Response): Promise<Response> => {
+    const { jogadorId } = req.params;
+    const licencas = await this.lojaService.obterBiblioteca(jogadorId);
     return res.status(200).json(licencas);
   };
 
-  criarAvaliacao = (req: Request, res: Response): Response => {
+  criarAvaliacao = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const avaliacao = this.lojaService.criarAvaliacao(req.body);
+      const avaliacao = await this.lojaService.criarAvaliacao(req.body);
       return res.status(201).json(avaliacao);
     } catch (error: any) {
       const status = error.statusCode || 400;
@@ -62,9 +61,9 @@ export class LojaController {
     }
   };
 
-  listarAvaliacoesPorJogo = (req: Request, res: Response): Response => {
-    const jogoId = Number(req.params.jogoId);
-    const avaliacoes = this.lojaService.listarAvaliacoesPorJogo(jogoId);
+  listarAvaliacoesPorJogo = async (req: Request, res: Response): Promise<Response> => {
+    const { jogoId } = req.params;
+    const avaliacoes = await this.lojaService.listarAvaliacoesPorJogo(jogoId);
     return res.status(200).json(avaliacoes);
   };
 }

@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { JogoController } from "../../../interfaces/controllers/JogoController";
 import { JogoService } from "../../../services/JogoService";
-import { JogoRepositoryInMemory } from "../../database/JogoRepositoryInMemory";
+import { JogoRepositoryPrisma } from "@infrastructure/database/JogoRepositoryPrisma";
 
 const router = Router();
 
-const jogoRepository = new JogoRepositoryInMemory();
+const jogoRepository = new JogoRepositoryPrisma();
 const jogoService = new JogoService(jogoRepository);
 const jogoController = new JogoController(jogoService);
 

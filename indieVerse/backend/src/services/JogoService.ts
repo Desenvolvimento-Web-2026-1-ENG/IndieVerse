@@ -6,31 +6,31 @@ export interface CriarJogoDTO {
   descricao?: string;
   preco: number;
   requisitosMinimos?: string;
-  categoriaId: number;
-  desenvolvedorId: number;
+  categoriaId: any;
+  desenvolvedorId: any;
 }
 
 export class JogoService {
   constructor(private jogoRepository: IJogoRepository) {}
 
-  listarTodos(): Jogo[] {
-    return this.jogoRepository.listarTodos();
+  async listarTodos(): Promise<Jogo[]> {
+    return await this.jogoRepository.listarTodos();
   }
 
-  buscarPorId(id: number): Jogo {
-    const jogo = this.jogoRepository.buscarPorId(id);
+  async buscarPorId(id: any): Promise<Jogo> {
+    const jogo = await this.jogoRepository.buscarPorId(id);
     if (!jogo) {
       throw new Error("Jogo não encontrado.");
     }
     return jogo;
   }
 
-  criar(dados: CriarJogoDTO): Jogo {
+  async criar(dados: CriarJogoDTO): Promise<Jogo> {
     if (!dados.titulo || dados.preco === undefined || !dados.categoriaId || !dados.desenvolvedorId) {
       throw new Error("Campos obrigatórios ausentes.");
     }
 
-    return this.jogoRepository.criar({
+    return await this.jogoRepository.criar({
       titulo: dados.titulo,
       descricao: dados.descricao ?? "",
       preco: dados.preco,

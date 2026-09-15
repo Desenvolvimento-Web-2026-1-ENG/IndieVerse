@@ -135,9 +135,9 @@ A documentação segue os princípios da Arquitetura Limpa, onde a interface e e
 ## 5. Endpoints de Documentação no Servidor
 Após iniciar a aplicação (npm run dev), a documentação interativa e os artefatos de integração estarão acessíveis através dos seguintes caminhos HTTP:
 
-- Swagger UI (Interface Interativa): http://localhost:8080/api-docs
+- Swagger UI (Interface Interativa): http://localhost:3000/api-docs
 
-- Especificação JSON (Importação no Postman): http://localhost:8080/api-docs-json
+- Especificação JSON (Importação no Postman): http://localhost:3000/api-docs-json
 
 ## 6. Como Executar o Projeto Localmente
 
@@ -147,12 +147,112 @@ Após iniciar a aplicação (npm run dev), a documentação interativa e os arte
 2. Instale as dependências:
    npm install
 
-3. Inicie o servidor em modo de desenvolvimento:
+3. Execute as migrações do Prisma (para criar o banco SQLite):
+   npx prisma migrate dev
+
+4. Inicie o servidor em modo de desenvolvimento:
+   cd indieVerse
+   cd backend
    npm run dev
 
-4. Acesse a documentação no navegador:
-   http://localhost:8080/api-docs
+5. Em outro terminal, inicie o frontend:
+   cd indieVerse
+   cd frontend
+   npm run dev
 
+## 7. Tecnologias Utilizadas
+
+- **Frontend:** React.js, Bootstrap 5, Axios, React Hooks
+- **Backend:** Node.js, Express, TypeScript, CORS
+- **Banco de Dados:** SQLite + Prisma ORM
+- **Documentação:** Swagger 
+
+## 8 Guia de Telas
+
+### Loja de jogos
+Vitrine de jogos independentes com suporte a busca e filtros por categoria.
+
+![Loja](./docs/imagens/loja.png)
+
+---
+
+### Loja de jogos 2
+Final da página, mostrando todos os jogos cadastrados.
+
+![Jogos em Destaque](./docs/imagens/jogos_em_destaque.png)
+
+---
+
+### Detalhes dos jogos
+Ao clicar no botão de "Ver Detalhes" você pode visualizar diversas informações sobre aquele jogo em específico.
+Uma delas são as avaliações dadas pelos outros jogadores.
+
+![Datelhes](./docs/imagens/datalhes_jogo.png)
+
+---
+
+### Biblioteca
+Local onde o jogador poderá visualizar os jogos que comprou e poderá dar as devidas notas.
+
+![Biblioteca](./docs/imagens/Biblioteca.png)
+
+---
+
+### Formulário de avaliar jogo
+Formulário simples que permite a avaliação do jogo.
+
+![Avaliar Jogo](./docs/imagens/avaliar_jogo.png)
+
+---
+
+### Carrinho
+Local do sistema onde tem o controle dos jogos no carrinho, podendo excluir ou comprar.
+
+![Carrinho](./docs/imagens/carrinho.png)
+
+---
+
+### Editar Perfil
+Formulário simples que permite a edição do perfil, seja do jogador ou desenvolvedor.
+
+![Editar Perfil](./docs/imagens/editar_perfil.png)
+
+---
+
+### Formulário de Login
+Formulário, também simples, que permite a criação de contas de desenvolvedores e jogadores, além de permitir o login dos mesmos.
+
+![Formulário de Login](./docs/imagens/formulario_login.png)
+
+---
+
+### Meus Jogos 
+Local onde o desenvolvedor pode visualizar todos os jogos que já postou.
+
+![Meus Jogos](./docs/imagens/meus_jogos.png)
+
+---
+
+### Ver Avaliações
+Nesse local o desenvolvedor pode visualizar as avaliações dos seus jogos.
+
+![Ver Avaliações](./docs/imagens/ver_avaliacoes.png)
+
+---
+
+### Publicar Jogo
+Nesse local o desenvolvedor pode cadastrar os seus jogos.
+
+![Categorias](./docs/imagens/publicar_jogo.png)
+
+---
+
+### Categorias
+Nesse local, o desenvolvedor vai poder criar uma nova categoria para seus jogos, editar outras e/ou excluir alguma.
+
+![Categorias](./docs/imagens/categorias.png)
+
+---
 
 ### Autor
 

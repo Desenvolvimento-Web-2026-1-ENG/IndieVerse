@@ -4,7 +4,7 @@ import { IJogoRepository } from "@repositories/IJogoRepository";
 let jogos: Jogo[] = [];
 let proximoId = 1;
 
-export class JogoRepositoryInMemory implements IJogoRepository {
+/*export class JogoRepositoryInMemory implements IJogoRepository {
   listarTodos(): Jogo[] {
     return jogos;
   }
@@ -48,4 +48,4 @@ export class JogoRepositoryInMemory implements IJogoRepository {
     jogos = jogos.filter((j) => j.id !== id);
     return jogos.length < tamanhoInicial;
   }
-}
+}*/

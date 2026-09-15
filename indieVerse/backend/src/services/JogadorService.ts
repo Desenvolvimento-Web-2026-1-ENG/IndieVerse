@@ -13,35 +13,35 @@ export interface AtualizarJogadorDTO {
 export class JogadorService {
   constructor(private jogadorRepository: any) {}
 
-  listarTodos(): Jogador[] {
-    return this.jogadorRepository.listarTodos();
+  async listarTodos(): Promise<Jogador[]> {
+    return await this.jogadorRepository.listarTodos();
   }
 
-  buscarPorId(id: number): Jogador {
-    const jogador = this.jogadorRepository.buscarPorId(id);
+  async buscarPorId(id: any): Promise<Jogador> {
+    const jogador = await this.jogadorRepository.buscarPorId(id);
     if (!jogador) {
       throw new Error("Jogador não encontrado.");
     }
     return jogador;
   }
 
-  criar(dados: CriarJogadorDTO): Jogador {
+  async criar(dados: CriarJogadorDTO): Promise<Jogador> {
     if (!dados.nome || !dados.email) {
       throw new Error("Nome e Email são obrigatórios.");
     }
-    return this.jogadorRepository.criar(dados);
+    return await this.jogadorRepository.criar(dados);
   }
 
-  atualizar(id: number, dados: AtualizarJogadorDTO): Jogador {
-    const jogador = this.jogadorRepository.atualizar(id, dados);
+  async atualizar(id: any, dados: AtualizarJogadorDTO): Promise<Jogador> {
+    const jogador = await this.jogadorRepository.atualizar(id, dados);
     if (!jogador) {
       throw new Error("Jogador não encontrado.");
     }
     return jogador;
   }
 
-  deletar(id: number): void {
-    const deletado = this.jogadorRepository.deletar(id);
+  async deletar(id: any): Promise<void> {
+    const deletado = await this.jogadorRepository.deletar(id);
     if (!deletado) {
       throw new Error("Jogador não encontrado.");
     }

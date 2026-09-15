@@ -9,7 +9,7 @@ let categorias: Categoria[] = [
 ];
 let proximoId = 5;
 
-export class CategoriaRepositoryInMemory implements ICategoriaRepository {
+/*export class CategoriaRepositoryInMemory implements ICategoriaRepository {
   listarTodas(): Categoria[] {
     return categorias;
   }
@@ -47,4 +47,4 @@ export class CategoriaRepositoryInMemory implements ICategoriaRepository {
     categorias = categorias.filter((c) => c.id !== id);
     return categorias.length < tamanhoInicial;
   }
-}
+}*/

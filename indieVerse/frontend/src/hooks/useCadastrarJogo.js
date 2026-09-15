@@ -30,7 +30,7 @@ export function useCadastrarJogo(usuario, setTelaAtual) {
       setCategorias(dados);
       
       if (dados.length > 0) {
-        setFormData((prev) => ({ ...prev, categoriaId: dados[0].id }));
+        setFormData((prev) => ({ ...prev, categoriaId: String(dados[0].id) }));
       }
     } catch (error) {
       console.error('Erro ao carregar categorias:', error);
@@ -47,20 +47,22 @@ export function useCadastrarJogo(usuario, setTelaAtual) {
     setSalvando(true);
     setMensagem({ tipo: '', texto: '' });
 
+    if (!formData.categoriaId) {
+      setMensagem({ tipo: 'erro', texto: 'Por favor, selecione uma categoria.' });
+      setSalvando(false);
+      return;
+    }
+
     try {
+      const requisitosString = `SO: ${formData.so}, Processador: ${formData.processador}, RAM: ${formData.memoriaRam}, Vídeo: ${formData.placaVideo}, Espaço: ${formData.armazenamento}`;
+
       const payload = {
         titulo: formData.titulo,
         descricao: formData.descricao,
         preco: parseFloat(formData.preco),
-        desenvolvedorId: usuario?.id,
-        categoriaId: parseInt(formData.categoriaId),
-        requisitosMinimos: {
-          so: formData.so,
-          processador: formData.processador,
-          memoriaRam: formData.memoriaRam,
-          placaVideo: formData.placaVideo,
-          armazenamento: formData.armazenamento
-        }
+        desenvolvedorId: String(usuario?.id),
+        categoriaId: String(formData.categoriaId),
+        requisitosMinimos: requisitosString
       };
 
       await cadastrarJogoService.cadastrarJogo(payload);
@@ -71,7 +73,8 @@ export function useCadastrarJogo(usuario, setTelaAtual) {
       }, 1500);
     } catch (error) {
       console.error('Erro ao cadastrar jogo:', error);
-      setMensagem({ tipo: 'erro', texto: 'Erro ao cadastrar o jogo. Verifique os dados.' });
+      const msgErro = error.response?.data?.mensagem || 'Erro ao cadastrar o jogo. Verifique os dados.';
+      setMensagem({ tipo: 'erro', texto: msgErro });
     } finally {
       setSalvando(false);
     }

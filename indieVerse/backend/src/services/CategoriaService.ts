@@ -1,50 +1,39 @@
-import { Categoria } from "@entities/Categoria";
-
-export interface CriarCategoriaDTO {
-  nome: string;
-}
-
-export interface AtualizarCategoriaDTO {
-  nome: string;
-}
+import { ICategoriaRepository } from "../repositories/ICategoriaRepository";
 
 export class CategoriaService {
-  constructor(private categoriaRepository: any) {}
+  constructor(private categoriaRepository: ICategoriaRepository) {}
 
-  listarTodas(): Categoria[] {
-    return this.categoriaRepository.listarTodas();
+  async listarTodas() {
+    return await this.categoriaRepository.listarTodas();
   }
 
-  buscarPorId(id: number): Categoria {
-    const categoria = this.categoriaRepository.buscarPorId(id);
+  async buscarPorId(id: any) {
+    const categoria = await this.categoriaRepository.buscarPorId(id);
     if (!categoria) {
       throw new Error("Categoria não encontrada.");
     }
     return categoria;
   }
 
-  criar(dados: CriarCategoriaDTO): Categoria {
-    if (!dados.nome || dados.nome.trim() === "") {
+  async criar(dados: { nome: string }) {
+    if (!dados.nome) {
       throw new Error("O nome da categoria é obrigatório.");
     }
-    return this.categoriaRepository.criar(dados);
+    return await this.categoriaRepository.criar(dados);
   }
 
-  atualizar(id: number, dados: AtualizarCategoriaDTO): Categoria {
-    if (!dados.nome || dados.nome.trim() === "") {
-      throw new Error("O nome da categoria é obrigatório.");
-    }
-    const categoria = this.categoriaRepository.atualizar(id, dados);
+  async atualizar(id: any, dados: { nome?: string }) {
+    const categoria = await this.categoriaRepository.atualizar(id, dados);
     if (!categoria) {
-      throw new Error("Categoria não encontrada.");
+      throw new Error("Categoria não encontrada para atualização.");
     }
     return categoria;
   }
 
-  deletar(id: number): void {
-    const deletada = this.categoriaRepository.excluir(id);
-    if (!deletada) {
-      throw new Error("Categoria não encontrada.");
+  async deletar(id: any) {
+    const deletado = await this.categoriaRepository.excluir(id);
+    if (!deletado) {
+      throw new Error("Categoria não encontrada para exclusão.");
     }
   }
 }

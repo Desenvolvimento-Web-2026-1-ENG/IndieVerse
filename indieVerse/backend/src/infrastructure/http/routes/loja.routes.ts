@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { LojaController } from "../../../interfaces/controllers/LojaController";
 import { LojaService } from "../../../services/LojaService";
-import { CarrinhoRepositoryInMemory } from "@infrastructure/database/CarrinhoRepositoryInMemory";
-import { BibliotecaRepositoryInMemory } from "@infrastructure/database/BibliotecaRepositoryInMemory";
-import { AvaliacaoRepositoryInMemory } from "@infrastructure/database/AvaliacaoRepositoryInMemory";
+import { CarrinhoRepositoryPrisma } from "@infrastructure/database/CarrinhoRepositoryPrisma";
+import { BibliotecaRepositoryPrisma } from "@infrastructure/database/BibliotecaRepositoryPrisma";
+import { AvaliacaoRepositoryPrisma } from "@infrastructure/database/AvaliacaoRepositoryPrisma";
 
 const router = Router();
 
-const carrinhoRepository = new CarrinhoRepositoryInMemory();
-const bibliotecaRepository = new BibliotecaRepositoryInMemory();
-const avaliacaoRepository = new AvaliacaoRepositoryInMemory();
+const carrinhoRepository = new CarrinhoRepositoryPrisma();
+const bibliotecaRepository = new BibliotecaRepositoryPrisma();
+const avaliacaoRepository = new AvaliacaoRepositoryPrisma();
 
 const lojaService = new LojaService(
   carrinhoRepository,
@@ -33,9 +33,9 @@ const lojaController = new LojaController(lojaService);
  *             required: [jogadorId, jogoId]
  *             properties:
  *               jogadorId:
- *                 type: integer
+ *                 type: string
  *               jogoId:
- *                 type: integer
+ *                 type: string
  *     responses:
  *       201:
  *         description: Item adicionado ao carrinho com sucesso
@@ -55,7 +55,7 @@ router.post("/carrinho", (req, res) => lojaController.adicionarAoCarrinho(req, r
  *         name: jogadorId
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
  *         description: Estado atual do carrinho obtido com sucesso
@@ -73,12 +73,12 @@ router.get("/carrinho/:jogadorId", (req, res) => lojaController.obterCarrinho(re
  *         name: jogadorId
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *       - in: path
  *         name: jogoId
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       204:
  *         description: Item removido do carrinho com sucesso
@@ -100,7 +100,7 @@ router.delete("/carrinho/:jogadorId/item/:jogoId", (req, res) =>
  *         name: jogadorId
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
  *         description: Checkout realizado com sucesso, status alterado para FINALIZADO e carrinho zerado
@@ -122,7 +122,7 @@ router.put("/carrinho/:jogadorId/checkout", (req, res) =>
  *         name: jogadorId
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
  *         description: Lista de licenças do jogador
@@ -146,9 +146,9 @@ router.get("/biblioteca/:jogadorId", (req, res) =>
  *             required: [jogadorId, jogoId, nota, comentario]
  *             properties:
  *               jogadorId:
- *                 type: integer
+ *                 type: string
  *               jogoId:
- *                 type: integer
+ *                 type: string
  *               nota:
  *                 type: integer
  *                 example: 5
@@ -173,7 +173,7 @@ router.post("/avaliacoes", (req, res) => lojaController.criarAvaliacao(req, res)
  *         name: jogoId
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
  *         description: Lista de avaliações do jogo obtida com sucesso

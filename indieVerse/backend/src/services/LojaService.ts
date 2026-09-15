@@ -1,11 +1,11 @@
 export interface AdicionarItemCarrinhoDTO {
-  jogadorId: number;
-  jogoId: number;
+  jogadorId: any;
+  jogoId: any;
 }
 
 export interface CriarAvaliacaoDTO {
-  jogadorId: number;
-  jogoId: number;
+  jogadorId: any;
+  jogoId: any;
   nota: number;
   comentario: string;
 }
@@ -17,47 +17,49 @@ export class LojaService {
     private avaliacaoRepository: any
   ) {}
 
-  adicionarItemCarrinho(dados: AdicionarItemCarrinhoDTO) {
+  async adicionarItemCarrinho(dados: AdicionarItemCarrinhoDTO) {
     if (!dados.jogadorId || !dados.jogoId) {
       throw new Error("jogadorId e jogoId são obrigatórios.");
     }
-    return this.carrinhoRepository.adicionarItem(
-      Number(dados.jogadorId),
-      Number(dados.jogoId)
+    return await this.carrinhoRepository.adicionarItem(
+      dados.jogadorId,
+      dados.jogoId
     );
   }
 
-  obterCarrinho(jogadorId: number) {
-    return this.carrinhoRepository.obterCarrinho(jogadorId);
+  async obterCarrinho(jogadorId: any) {
+    return await this.carrinhoRepository.obterCarrinho(jogadorId);
   }
 
-  removerItemCarrinho(jogadorId: number, jogoId: number) {
-    const removido = this.carrinhoRepository.removerItem(jogadorId, jogoId);
+  async removerItemCarrinho(jogadorId: any, jogoId: any) {
+    const removido = await this.carrinhoRepository.removerItem(jogadorId, jogoId);
     if (!removido) {
       throw new Error("Item não encontrado no carrinho.");
     }
   }
 
-  realizarCheckout(jogadorId: number) {
+  async realizarCheckout(jogadorId: any) {
     if (!jogadorId) {
       throw new Error("jogadorId inválido.");
     }
 
-    const carrinho = this.carrinhoRepository.obterCarrinho(jogadorId);
+    const carrinho = await this.carrinhoRepository.obterCarrinho(jogadorId);
 
     if (carrinho.status !== "ABERTO") {
       throw new Error(`O carrinho atual não está ABERTO (Status atual: ${carrinho.status}).`);
     }
 
-    if (carrinho.itens.length === 0) {
+    if (!carrinho.itens || carrinho.itens.length === 0) {
       throw new Error("O carrinho está vazio.");
     }
 
-    const licencasGeradas = carrinho.itens.map((item: any) =>
-      this.bibliotecaRepository.adicionarLicenca(item.jogadorId, item.jogoId)
+    const licencasGeradas = await Promise.all(
+      carrinho.itens.map((item: any) =>
+        this.bibliotecaRepository.adicionarLicenca(item.jogadorId, item.jogoId)
+      )
     );
 
-    const carrinhoAtualizado = this.carrinhoRepository.atualizarStatus(jogadorId, "FINALIZADO");
+    const carrinhoAtualizado = await this.carrinhoRepository.atualizarStatus(jogadorId, "FINALIZADO");
 
     return {
       carrinho: carrinhoAtualizado,
@@ -65,12 +67,12 @@ export class LojaService {
     };
   }
 
-  obterBiblioteca(jogadorId: number) {
-    return this.bibliotecaRepository.buscarPorJogador(jogadorId);
+  async obterBiblioteca(jogadorId: any) {
+    return await this.bibliotecaRepository.buscarPorJogador(jogadorId);
   }
 
-  criarAvaliacao(dados: CriarAvaliacaoDTO) {
-    const possuiLicenca = this.bibliotecaRepository.possuiLicenca(
+  async criarAvaliacao(dados: CriarAvaliacaoDTO) {
+    const possuiLicenca = await this.bibliotecaRepository.possuiLicenca(
       dados.jogadorId,
       dados.jogoId
     );
@@ -83,16 +85,15 @@ export class LojaService {
       throw error;
     }
 
-    return this.avaliacaoRepository.criar({
+    return await this.avaliacaoRepository.criar({
       jogadorId: dados.jogadorId,
       jogoId: dados.jogoId,
       nota: dados.nota,
       comentario: dados.comentario,
-      dataCriacao: new Date(),
     });
   }
 
-  listarAvaliacoesPorJogo(jogoId: number) {
-    return this.avaliacaoRepository.buscarPorJogo(jogoId);
+  async listarAvaliacoesPorJogo(jogoId: any) {
+    return await this.avaliacaoRepository.buscarPorJogo(jogoId);
   }
 }
